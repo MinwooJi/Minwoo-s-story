@@ -1,0 +1,83 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper
+        PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+        "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.dima.test.dao.TagDao">
+	<!-- 태그 등록 -->
+	<insert id="insertTag" parameterType="String">
+		insert ignore into TAG(
+		TAG_NAME
+		) values (
+		#{tagName}
+		)
+	</insert>
+
+	<!-- Post - Tag 등록 -->
+	<insert id="insertPostTag" parameterType="hashmap">
+		insert ignore into POST_TAG (
+		POST_NUMBER,
+		TAG_NUMBER
+		) values (
+		#{postNumber},
+		#{tagNumber}
+		)
+	</insert>
+
+	<!-- TagName으로 TagNumber 찾기 -->
+	<select id="findTagNumber" resultType="Integer"
+		parameterType="String">
+		select TAG_NUMBER
+		FROM TAG
+		WHERE TAG_NAME = #{tagName}
+	</select>
+	<!-- TagNumber로 Post출력 -->
+	<select id="findPostByTag" resultType="Hashmap"
+		parameterType="String">
+		select * from POST 
+		where POST_NUMBER in ( 
+		select POST_NUMBER 
+		FROM POST_TAG 
+		WHERE TAG_NUMBER in (
+		SELECT TAG_NUMBER 
+		FROM TAG 
+		WHERE TAG_NAME= #{tagName})
+		);
+	</select>
+
+	<insert id="checkAlgoCategory" parameterType="TAG">
+		insert ignore into ALGO_CATEGORY(POST_NUMBER, CATEGORY)
+		values (#{postNumber}, #{category});
+	</insert>
+	<update id="modifyPostTag" parameterType="AlgoCategoryCount">
+		update ALGO_CATEGORY_COUNT 
+		set HASH=HASH+#{hash}, 
+		 STACK_QUEUE=STACK_QUEUE+#{stackQueue}, 
+		 HEAP=HEAP+#{heap}, 
+		 SORT=SORT+#{sort}, 
+		 BROUTE_FORCE=BROUTE_FORCE+#{brouteForce},
+		 GREEDY=GREEDY+#{greedy}, 
+		 DYNAMIC=DYNAMIC+#{dynamic},
+		 DFS_BFS=DFS_BFS+#{dfsBfs},
+		 `BINARY`=`BINARY`+#{binary},
+		 GRAPH=GRAPH+#{graph},
+		 SIMULATION=SIMULATION+#{simulation},
+		 ETC=ETC + #{etc} 
+		where USER_ID=#{userId} 
+	</update>
+	<insert id="insertUserTage" parameterType="String">
+		insert ignore into ALGO_CATEGORY_COUNT(USER_ID) values
+		(#{userId})
+	</insert>
+	<select id="selectSolve" parameterType="Integer" resultType="Integer">
+		select IS_SOLVED from POST where POST_NUMBER=#{postNumber} 
+	</select>
+	
+	
+	<select id="findTagByPostNumber" parameterType="Integer" resultType="hashmap">
+		select TAG_NAME
+		from TAG
+		where TAG_NUMBER in (select TAG_NUMBER
+							from POST_TAG
+							where POST_NUMBER = #{postNumber})
+	</select>
+</mapper>

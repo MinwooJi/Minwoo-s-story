@@ -1,0 +1,10 @@
+CREATE TABLE `fav_list` (
+  `fv_no` int NOT NULL AUTO_INCREMENT COMMENT 'fv_no',
+  `no` int NOT NULL COMMENT 'no',
+  `id` varchar(45) NOT NULL COMMENT 'id',
+  PRIMARY KEY (`fv_no`),
+  UNIQUE KEY `no` (`no`),
+  KEY `FK_fav_list_id_member_id` (`id`),
+  CONSTRAINT `FK_fav_list_id_member_id` FOREIGN KEY (`id`) REFERENCES `member` (`id`) ON DELETE RESTRICT ON UPDATE RESTRICT,
+  CONSTRAINT `FK_fav_list_no_housedeal_no` FOREIGN KEY (`no`) REFERENCES `housedeal` (`no`) ON DELETE RESTRICT ON UPDATE RESTRICT
+) ENGINE=InnoDB AUTO_INCREMENT=7 DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_0900_ai_ci COMMENT='fav_list'

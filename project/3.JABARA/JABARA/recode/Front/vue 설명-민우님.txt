@@ -1,0 +1,580 @@
+es6 의특징
+화살표함수
+ 파라미터 한개일떄 앞의 소괄호 생략가능
+ 구현부분이 한줄일경우 대괄호 생략가능, 대괄호 생략시 return 뺴줘야함
+
+destructuring
+ 함수인자로 오브젝트 멤버변수들을 선언하고 거기에 오브젝트를 통쨰로 넣으면 알아서 멤버변수값을 대입함
+
+코드 참조가능한 사이트 codepen
+
+vue의 장점
+ 가장 적은 러닝커브 (문법 이해가 쉬움) 
+ 매우 적은 크기
+ 공식 사이트의 상세한 설명
+ 가장 최근에 릴리즈한 프레임 워크
+ React와 Aungular장점 적용
+
+
+vue가 지향 하는 MVVM 패턴
+
+텍스트
+{{속성명}} 보간법에서 사용되는 데이터 바인딩의 기본형태
+
+
+
+directives
+ v-text : text로 가져옴
+ v-html : html을 해석함
+ v-once: 데이터 변경시 업데이트 되지 않는 일회성 보간 수행
+ v-model : 양방향통신 
+ v-bind : 속성값을 대입시킬떄 (속성명등에 사용됨)
+ v-if
+ v-else-if  : 조건이 참일때 디렉티브가 들어가있는 태그를 표현함
+ v-for : 배열이나 객체의 반복에 사용
+
+ template : 여러개의 태그들을 묶어서 처리해야 한다면 template를 이용하면 편리
+ v-cloak vue인스턴스가 준비될떄까지 화면에 특정부분을 숨기고싶을떄 사용
+
+-정리
+ v-model = 양방향 (form, input)
+ v-bind = 속성, 약어 :
+ v-for = 값, 인덱스 in 배열
+ v-show 
+ v- if v-if-else
+ v-text = 보간법 = {{}}
+ 
+vue instance lifecycle
+ vue 인스턴스는 생성될떄 일련의 초기화 과정을 가진다.
+ 데이터 관찰
+ 템플릿 컴파일
+ 인스턴스를 dom에 마운트
+ 데이터가 변경되어 dom을 업데이트
+
+new Vue() - init Evnet&Lifecycle - (beforeCreate) - init injections & reactivity - (created) 
+             - has 'el'option - yes- has 'template'option             - yes compile template into reder function
+                                   no - when vm.$mount(el)is called   - no compile el's outerHTML as template *
+             - (eforeMount) create vm.$el and replace 'el'with it - (mounted) - mounted .....
+
+lifecycle Hooks
+beforeCreated : vue 인스턴스가 생성되고 각 정보의 설정전에 호출
+create : vue 인스턴스가 생성된후 데이터들의 설정이 완료 후 호출
+beforeMount : 마운트가 시적되기 전에 호출
+mounted : 지정된 엘리먼트에 vue인스턴스 데이터가 마운트 된후에 호출
+beforeupdtate : 데이터가 변경될때 virtual dom이 랜더링.패치 되기전 호출
+updtaed : vue에서 관리되는 데이터가 변경되어 dom이 업데이트 된 상태
+beforedestroy : vue instance가 제거되기전에 호출
+destroyed : vue instance가 제거된 후에 호출
+
+Vue Method
+vue 인스턴스는 생성 관련된 데이터(data)및 메서드의 정의가 가능
+메서드 안에서 데이터를 this.데이터이름 으로 접근
+
+Vue filter ' 변수 | filter ' (변수 출력하기 직전에 출력내용을 가로채서 filter에서 변경후 출력)
+ filter를 이용하여 표현식에 새로운 결과형식을 적용
+ 중괄호보간법{{}} 또는 v-bind 속성에서 사용이 가능
+
+Vue computed 속성 - 스토커 (너의 변화를 지켜봐)
+ 특정 데이터의 변경사항을 실시간으로 처리할 수있음
+ 캐싱을 이요하여 데이터의 변경이 없을 경우 캐싱된 데이터를 반환
+ setter와 getter을 직접 지정할수 있음
+ 작성은 메서드 형태로 작성하지만 vue에서 프록시 처리하여 프로퍼티처럼 사용
+
+vue 
+ : 값이 바뀌면 실행할 콜백함수를 설정할수 있음​
+ (watch : 공포영화 -> data를 지켜보면서 주인공 data와 똑같이 옷을 입고 갈아입은 후와 전을 모두 지켜봄)
+
+Vue Event
+Dom이벤트를 청취하기 위해 v-on 디렉티브 사용
+인라인 이벤트 핸들링
+메서드를 이용한 이벤트 핸들링
+
+ref, $refs
+Vue인스턴스 객체의 자식 컴포넌트 또는 DOM엘리먼트 요소를 찾을떄
+
+class 바인딩 css 동적 으로 설정할떄 많이 사용
+ v-bind:class=" '':'' "
+
+이벤트 수식어와 키수식어
+ v-on (v-on.click.stop / v-on:submit.prevent)
+      .stop/.prevent/.once
+ 키보드 이벤트 수식어 
+       .13(enter)/.enter/.delete
+
+폼 입력 바인딩
+v-model 은 입력 요소에 대해서 특정 속성과 이벤트를 사용함
+ text와 textarea : value,input이벤트 사용   -  (value값을 관리하게됨)
+ checkbox,radio : checked, change이벤트 사용   
+  - 체크박스 (boolean 값을 관리하게됨) 체크박스가 여러개일때는 체크한값의 value가 넘어감
+  - radio value값을 관리
+ select : value change이벤트 사용
+
+
+컴포넌트의 이해 vue의 강력한 부분중 하나 - 재사용 가능한 부분을 모듈로 만들어 관리
+컴포넌트간 통신
+모듈시스템을 이요한 컴포넌트
+
+컴포턴트 (리액트, 앵귤러에서도 사용가능)
+ vue의 가장 강력한 기능 중 하나
+ HTML 엘리먼트를 확장하여 재사용 가능한 코드를 캡슐화 (jsp include와 비슷)
+ vue 인스턴스의 옵션을 대부분 사용
+ 라이프사이클 훅 사용 가능
+ 전역 컴포넌트와 지역 컴포넌트 
+
+ 전역컴포넌트 등록 (component) - s없음
+  Vue.component(tagName,options)
+    Vue.component("my-comp:,{ 
+      // 옵션 
+      template:'<div> ~ </div>'
+   }); 
+ 권장하는 컴포넌트 이름 : 케밥 표기법(my-comp )(사용할떄) , 파스칼(MyComp)표기법(선언할때)
+
+ 지역컴포넌트 등록 - 등록된 instance에서만 사용가능
+ let comp={
+  template:'<div>지역 컴포넌트</div>'
+ }
+ new Vue({
+   el:"#app1",
+   components:{
+     'my-comp':comp
+   }
+ })
+
+ 컴포넌트 data공유
+   let data = {
+            count: 0
+        };
+   Vue.component('CountView', {
+       data() {
+           return data;
+    },
+       template: '#CountView'
+    })
+
+ 컴포넌트간 통신
+  부모에서 자식 : props
+  자식에서 부모 : event . (emit과 on을 사용)
+
+ 사용자정의 이벤트 (?)
+이벤트 발생 -> 함수를 실행한는것
+ vm.$emit("이벤트명",[파라미터...]);
+ vm.$emit("speed",100);
+이벤트 수신 -> 함수를 선언하는것
+ vm.$on("이벤트명",콜백함수);
+ vm.$on("speed",function(speed){});
+
+ 자식->부모 컴포넌트
+ 이벤트발생
+ this.$emit("이벤트명");
+ 이벤트 수신
+ <child v-on:이벤트명="부모컴포넌트 메서드명"></child>
+
+module정의 및 사용 -> script type은 모듈을 꼭줘야함
+ 내보내기 : export
+   export
+   export default : 통으로 객체를 넘겨주고 받는쪽에서 원하는 이름으로 받기
+ 가져오기 : import
+   import 모듈명 from 모듈위치
+
+promise객체
+ 비동기 작업을 마치 동기작업처럼 값을 반환해서 사용형태
+new Promise(function(resolve,reject){})
+ resolve(성공시 사용), reject(실패시 사용)
+
+ resolve() -> then() 
+ reject() -> catch()
+
+Http 통신 : axios
+NodeJS와 브라우저에서 모두 사용하룻 있는 Javascript라이브러리
+promise 기반의 HTTP 통신 라이브러리
+ 자동 json변환
+
+axios 설치
+ cdn 방식
+ <script src="https://unpkg.com/axios/dist/axios.min.js"></script>
+ npn방식  
+ npm install axios
+
+
+vue-router
+ 라우팅 - 웹페이지간의 이동방법
+ Vue.js의 공식 라우터
+ 라우터는 컴포넌트와 매핑
+ vue를 이용한 spa(싱글 페이지 어플리케이션)을 제작할때 유용
+ url에 따라 컴포넌트를 연결하고 설정된 컴포넌트를 보여준다.
+
+ CDN 방식
+ NPM 방식
+ - npm install vue-router
+
+1. vue-router 연결
+const router = new VueRouter({
+  routes:[ // 객체배열로 전달
+    {path:'/', component:Main},
+    {path:'login',component:Login}
+  ]
+})l
+
+2 .vue-router 이동 및 랜더링
+ <router-link> -> <a> 태그로 렌더링
+ 2-1. <router-lint to="/"> => 등록된 정보중 path경로에 맞는 컴포넌트를 찾음
+
+ 2-2. <router-view><router-view> 위치에 위의 라우터에 맞는 컴포넌트가 렌더링됨
+
+$router $route
+라우터 설정
+{
+ path:'/board/:no,
+ component:BoardView,
+}
+라우터 링크
+<router-link to="/board/2></router-link>
+
+BoardView
+created(){
+  //전체 라우터 정보
+ console.dir(this.$router);
+ // 해당 라우터 정보
+  console.dir(this.$route);
+
+  console.log(this.$route.prams.no); << 여기
+}
+
+이름을 가지는 라우트
+라우트에 연결하거나 탐색을 수행할떄 이름이 있는 라우트를 사용
+Router 인스턴스를 생성하는 동안 routes옵션에 지정
+<router-link :to="{name: '~' params:'{속성이름 : 값}'}"></router-link>    - params는 선택
+router설정단계에서 (라우터 객체 선언)
+ name속성이 추가됨.
+
+프로그램 방식 라우터 - > 라우터중에 들어간값을 찾아서 이동해라 따라서 전체 라우터인 router가 들어가야함 
+$router.push('home')
+$router.push(path:"home"});
+
+$router.push({name:'user',params:{userId:123} });
+$router.push({name:'register',query:{plan:'private'} });
+
+
+NPM(NodePackageManager)
+command에서 써드파티 모듈(제3의 개발자가 편의를 위해 만들어 제공한것)을 설치하고 관리하는 툴
+npm init : 새로운 프로젝트나 패키지를 만들떄 사용(package.json이 생성됨)
+
+npm 명령어
+ npm init : 새로운 프로젝트나 패키지를 만들떄 사용 
+ npm install 패키지 :  생성되는 위치에서만 사용 가능한 패키지로 설치
+ npm install-g : 글로벌 패키지에 추가, 모든 프로젝트에서 사용가능한 패키지로 설치
+
+Vue-CLI
+CLI - Command Line Interface(명령줄 인터페이스)
+Vue.js 개발을 위한 시스템으로 Vue.js에서 공식적으로 제공하는 CLI
+개발의 필수는 아니지만 개발의 편리성을 위해 필수처럼 사용
+Vue 프로젝트를 빠르게 구성할수있는 스캐폴딩을 제공
+Vue와 관련된 오픈소스들의 대부분이 CLI를 통해 구성이 가능하도록 구현되어있음
+
+BabelJS = ES6 -> ES5로 바꾸기위한도구
+
+webpack
+웹펙은 오픈 소스자바스크립트 모듈 번들러이다(.js .css ~로 모아주는 역할)
+
+
+Vue CLI
+ route - index.js
+ index.html - 화면꾸미기
+ main.js
+ App.vue
+
+
+
+
+
+<<vue 정리>>
+
+vue가 지향 하는 패턴 = MVVM 패턴
+
+
+vue 인스턴스의 옵션
+el
+data
+methods
+computed(스토커 , 여러개를 한꺼번에 볼수있음)
+watch
+filters (ex) msg | upper : msg를 upper로 fileter)  
+
+
+Vue.js Directive
+v-text
+v-html
+v-once
+v-model
+v-bind
+v-show
+v-if
+v-else if
+v-else
+v-for
+v-cloak
+v-on
+
+Vue 라이프사이클 훅
+beforeCrea te
+<created> DOM이 완성되기전 준비하는 단계
+beforeMoun - vue 인스턴스의 내용이 적용되지 않은 상태
+<mouted> 인스턴스의 내용이 적용되어 화면에 나타남 / DOM이 다 완성된다음 작동
+beforeUpdate,updated
+
+Vue.js Event
+v-on:click / @click
+prevent 작동을 막고싶다
+키보드 수식어 .13/ .Enter
+
+Vue.js 컴포넌트
+-전역/ 지역
+Vue.componet
+new vue{
+  component
+}
+-데이터 공유문제 
+function으로 처리
+-통신
+부모->자식 : props:["id","msg"]
+자식->부모 : event 
+
+axios - ajax처리를 하는 권장 비동기통신
+ promise기반의 HTTP 통신 라이브러리
+ axions.get(~)
+ .then(콜백)
+ .catch(콜백)
+ .function(콜백)
+
+vue-router
+ 싱글페이지 어플리케이션을 만들어줄수있음 - 새로고침없이 컴포넌트를 호출해서
+ 				         그내용을 원하는 위치에 표시할수있음
+   new Router({
+      routes: [{  }]
+   })
+
+ <router-link to=""></router-link>
+ <router-view></router-view>
+ $router, $route
+    파라미터 정보 $route.params.
+
+Name을 가지는 라우트
+ 프로그래밍 방식 라우트 ($router.push(...))
+ 중첩된 라우트
+ 리다이렉트 (redirect:"...")
+
+Ecma2015(es6)
+ destructuring
+ let const
+ property shorthand, concise method
+ 화살표함수
+ template String : ``
+ promise
+ 모듈 (import / export)
+
+npm (node package manager)
+ 3자의 개발자가 공유~
+
+바벨 es6문법을 es5로 자동변환
+
+
+<ws고치기> 
+
+1.create vue-board
+
+2.index.html에 부트나 css속성 적기
+
+3. main
+ 이전파일의 App에서 임포트와 익스포트 부분 router>index.js에 가져오기 (일단주석)
+   import Vue from "vue";
+   import VueRouter from "vue-router";
+   는 지우면 안됨
+3. app.vue 컴포넌트에 이전파일의 index.html부분 가져오기
+
+4.각 컴포넌트를 vue로 바꾸면서 index.js내의 주석 풀어주기
+
+node.js terminal 
+cd .. 뒤로
+
+npm run serve : 실행
+npm install ~
+cntl + c 실행 중지
+vue create ~~
+ manually select features 선택
+ Babel / Router / Linter /vuex
+ Historymode? Y
+ ESLint + Prettier 선택
+ Lint and fix on commit 선택
+ In dedicated config files 선택
+ Save this ~ N
+
+actions(method) -> state(data) -> view(template) 
+
+Vuex - 
+state : 단일 상태 트리를 사용 , 애프릴케이션마다 하나의 저장소를 관리(data)
+getter : Vue 인스턴스의  Computed같은 역할, State를 기반으로 계산(computed)
+Mutations : State의 상태를 변경하는 <유일한> 방법(method)
+Actions: 상태를 변이시키는 대신 액션으로 변이에 대한 커밋처리( 비동기methods)
+Vue Components -> (dispatch) -> actions -> (commit) -> mutations -> (mutate) ->  state -(render) ->  vue Components
+단방향 데이터흐름을 가지는 상태관리 패턴
+vue.js 애플리케이션에 대한 상태관리패턴 + 라이브러리
+애플리케이션 모든 컴포넌트들의 중앙 저장소 역할
+부모 자식단계가 많이 복잡해진다면 데이터의 전달하는 부분이 복잡해짐
+애플리케이션이 여러구송요소로 구성되고 더 커지는 경우 데이터를 공유하는 문제가 발생
+
+state : 공통의 data 저장소
+
+getter : vuex의  state를 접근하는 코드가 중복된다면? - store의 state를 참조하는 getters활용
+
+mapGetters : getters를 조금더 간단하게 호출 -> getters가 여러개일때 사용하면 좋음
+ 준비작업 import {mapGetters} from 'vuex;l
+ this.$store.getters.속성명 => this.속성명
+ ...mapGetters(['store.js에 있는 getter 속성명','~~','~~']),
+
+mutations : state의 값을 변경하기 위해서 사용
+ state의 값의 추적을 위해 동기적 기능에 사용
+ mutations는 직접 호출이 불가능하고 store.commit('정의된 이름')으로 호출
+
+mapMutations
+ 준비작업 import {mapMutations} from 'vuex;l
+ this.$store.commit('addOne'); => this.addOne
+ ...mapGetters( {사용할 이름 : 'store.js에 있는 getter 속성명', ~ : '~' ,~ : '~'} ),  mapGetters와 유사하지만 배열이아닌 객체로 관리
+
+Actions 
+ 비동기 작업의 결과를 적용하려고 할떄 사용
+ Mutations 상태 관리를 위해 동기적으로 처리하고 비동기적인 처리는 Actions가 담당
+ Actions는 비동기 로직의 처리가 종료되면 Mutations를 호출
+ dispatch를 통해서 호출함
+ this.$store.dispatch('asyncAddOne');
+
+mapActions
+ 위의 map작업들과 동일한 구성
+
+
+
+
+
+<<총정리 최종>>
+Vue.js란?
+ 에반유가 2014년에 만든 자바스크립트 프레임워크, 사용자 인터페이스를 쉽게 다루기 위한 프레임워크 
+단방향 바인딩과 양방향 바인딩의 차이점?
+ 단방향은 데이터의 흐름이 한쪽인 경우
+ 양방향은 데이터의 흐름이 양쪽인 경우
+Vue.js 의 지시자는 어떤 단어로 시작하는가
+ v-
+양방향 바인딩의 대표적 지시어는?
+ v-model
+단방향 바인딩의 대표적 지시어는?
+ v-bind, v-on, {{}}
+{{}}과 비슷한 지시어
+ v-text
+v-if -> false 일떄 <!-- --> 주석으로 나옴
+v-show -> flase 일떄   display:none
+
+v-model.trim
+
+<button :[key]="btnId" ></button key의 의미
+  동적 전달인자 방식으로 2.6버전에 추가
+  data속성중에서key가 id라면 자동 바인딩
+v-bind와 v-on의 축약 표현식은
+ :, @오전 10:05 2020-06-10
+v-cloak 값이 준비가 될때까지 화면에 보이지 않게하곘다
+특정 데이터 속성의 값이 변화되었는지 감시하고 그값의 결과를 <메모리에 기억>하고있다가 사용시에 보여주는 속성으로 
+복잡한 계산식에 적합한것은 - computed
+
+Vue인스턴스의 데이터 변경을 관찰하고 이에 반응하는 보다 일반적인 속성은 무엇인가?(이전값이 무엇이었는지 기억하는 특성) - watch
+
+<form v-on:?? = "onSumbmit"></form> 폼의 서브밋 이벤트 동작막을떄 ? 들어갈것
+ submit.prevent (앞에 막고자하는 이벤트를 명시해줘야함)
+
+입력항목에 keyup이벤트를 설정하려고 할떄 ?? 자리에 들어갈 코드는? (엔터키눌렀을떄 동작)
+<input v-model="id" ??="id">
+ @keyup.enter
+
+문자의 개수를 세는 count라는 필터를 만들었습니다
+입력창에 들어오는 글자수를 화면에 출력하려고 할떄 알맞은 코드는?? 
+ <h3>{{msg | count}}</h3>
+
+v-model 지시어를 input,textarea,select,다중 체크박스등에 사용할 경우 어떠한 속성과 연결되는가?
+ value
+
+전역컴포넌트와 지역컴포넌트의 차이점을 적으시오
+ 전역은 모든 Vue인스턴스에서 사용가능 / 지역은 컴포넌트가 선언된 인스턴스에서만 사용가능하다.
+
+컴포넌트간 통신에서 부모컴포넌트에서 자식으로 정보를 전달할떄 사용하는 속성은?
+ props
+ <div id="app">
+    <child-comp area="한국" v-bind:msg="굿"></child-comp>
+ </div>
+ Vue.component("ChildeComp",{
+   props:["area", "msg"],
+   template :"#ChildComp"
+ });
+
+컴포넌트간 통신에서 자식컴포넌트에서 부모으로 정보를 전달할떄 사용하는 속성은?
+ 이벤트 방식으로 , $emit, $on
+ <div id="app">
+    <subject v-on:addCount="addTotalCount" title="코딩"/>
+ </div>
+ this.$emit('addCount') 
+
+vuex를 통해 자식이나 부모간의 데이터 교환을 쉽게 할수있다.
+
+컴포넌트간 통신에서 비부모 자식간의 통신을 위해서 사용하는 방식은
+ 이벤트 버스
+ const bus = new Vue();
+ bus.$on('updateLog',this.updatedLog);
+ bus.$emit('updateLog',this.count)
+
+자바스크립트의 재사용을 es6 부터 제공하는 모듈시스템을 사용하려고할떄 떠오르는 2가지 키워드는?
+ import, export
+
+axios라이브러리에서 기본 사용되고 있는 개체로 es6부터 비동기 처리를 효율적으로 하기위해서 제공되는 것은?
+ promise
+
+vue-router를 이용해서 컴포넌트간 이동시 페이지 새로고침 없이 이동할수 있게 제공되는 태그명은? 
+ router-link
+
+router-link태그에서 이동할 경로를 표기하는 속성명은 무엇인가?
+ to
+
+해당하는 라우터의 경로와 일치하는 컴포넌트의 내용을 보이기 위해서 사용되는 태그이름은 무엇인가? 
+ router-view
+
+현재 사용되는 라우트의 정보를 얻을떄 사용하는 객체명은? 
+ $route
+
+등록된 모든 라우트의 정보를 가져올수있는 객체명은?
+ $router
+
+프로그래밍 방식을 이요하여 라우터에 등록된 이름이 user이고 query정보로 user=123 의 형태로 이3동하려고 합니다. 해당 코드를 작성하시오
+ $router.push({name:'user',query:{uesrId=123} })
+
+'/'로 요청이 들어오면 path경로가 'home'인 경로로 redirect하려고한다
+  redirect:'/home
+
+새로운 package나 project를 생성할떄 사용하는 npm명령어는 무엇인가?
+ npm init
+
+npm init로 패키지 또는 프로젝트 생성시 자동으로 만들어지는 파일명은 무엇인가?
+ pakage.json
+
+Vue-cli 2버젼과 3버전이상의 차이점은 무엇인가?
+ 프로젝트 생성시의 모듈 자동 다운로드
+   웹펙 설정 파일 노출
+   여러가지 템플릿중에서 하나선택방식(2버전)
+
+싱글파일컴포넌트의 구성요소 3가지를 적으시
+ template script style
+
+싱글파일컴포넌트의 확장자는?
+ .vue
+
+.vue 파일안의 style의 내용을 해당컴포넌트에서만 사용하게 하는 속성은?
+ scoped
+
+Vue에서 공식적으로 사용되고 있는 상태관리 라이브러리는? 
+ vuex
+
+Vuex의 핵심 컨셉 4가지 구성요소는?
+ getters, actions, mutations, state

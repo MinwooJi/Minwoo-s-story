@@ -1,0 +1,32 @@
+CREATE TABLE `qna_board` (
+  `qna_no` int NOT NULL AUTO_INCREMENT COMMENT '질문번호',
+  `qna_title` varchar(300) NOT NULL COMMENT '질문제목',
+  `qna_content` varchar(4000) NOT NULL COMMENT '질문내용',
+  `qna_userid` varchar(20) NOT NULL COMMENT '질문자아이디',
+  `qna_datetime` timestamp NULL DEFAULT CURRENT_TIMESTAMP COMMENT '질문일시',
+  `reply_content` varchar(4000) DEFAULT NULL COMMENT '답변내용',
+  `reply_datetime` timestamp NULL DEFAULT NULL COMMENT '답변일시',
+  `reply_userid` varchar(20) DEFAULT NULL COMMENT '답변자아이디',
+  PRIMARY KEY (`qna_no`),
+  KEY `qna_to_user_fk3` (`qna_userid`),
+  KEY `qna_to_user_fk4` (`reply_userid`),
+  CONSTRAINT `qna_to_user_fk3` FOREIGN KEY (`qna_userid`) REFERENCES `ssafy_member3` (`userid`),
+  CONSTRAINT `qna_to_user_fk4` FOREIGN KEY (`reply_userid`) REFERENCES `ssafy_member3` (`userid`)
+) ENGINE=InnoDB AUTO_INCREMENT=17 DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_0900_ai_ci COMMENT='질문게시판'
+
+
+
+
+CREATE TABLE `reply_board` (
+  `reply_no` int NOT NULL AUTO_INCREMENT COMMENT 'reply_no',
+  `qna_no` int NOT NULL COMMENT 'qna_no',
+  `reply_title` varchar(50) NOT NULL COMMENT 'reply_title',
+  `reply_content` varchar(100) DEFAULT NULL COMMENT 'reply_content',
+  `reply_datetime` timestamp NULL DEFAULT CURRENT_TIMESTAMP COMMENT 'reply_datetime',
+  `reply_userid` varchar(45) NOT NULL COMMENT 'reply_userid',
+  PRIMARY KEY (`reply_no`),
+  KEY `reply_to_user_fk4` (`reply_userid`),
+  KEY `FK_reply_board_qna_no_qna_board_qna_no` (`qna_no`),
+  CONSTRAINT `FK_reply_board_qna_no_qna_board_qna_no` FOREIGN KEY (`qna_no`) REFERENCES `qna_board` (`qna_no`) ON DELETE RESTRICT ON UPDATE RESTRICT,
+  CONSTRAINT `reply_to_user_fk4` FOREIGN KEY (`reply_userid`) REFERENCES `ssafy_member3` (`userid`)
+) ENGINE=InnoDB AUTO_INCREMENT=20 DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_0900_ai_ci

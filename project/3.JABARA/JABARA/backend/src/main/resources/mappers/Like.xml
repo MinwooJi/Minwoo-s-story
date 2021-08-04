@@ -1,0 +1,22 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper
+        PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+        "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.dima.test.dao.alrimDao">
+	<insert id="insertLike" parameterType="PostLikeTable">
+	insert into POST_LIKE_TABLE(POST_NUMBER,USER_ID,TARGETUSER_ID)
+									 values (#{postNumber},#{userId},#{targetuserId})
+	</insert>
+	
+	<delete id="deleteLike" parameterType="PostLikeTable">
+		delete from POST_LIKE_TABLE where TARGETUSER_ID=#{targetuserId} and POST_NUMBER=#{postNumber} and USER_ID=#{userId} 
+	</delete>
+	
+	<select id="selectList" parameterType="String" resultType="hashmap">
+		select * from POST_LIKE_TABLE where USER_ID=#{userId} 
+	</select>
+	<select id="selectLikePost" parameterType="PostLikeTable" resultType="Integer" >
+		select count(*) from POST_LIKE_TABLE where TARGETUSER_ID=#{targetuserId} and POST_NUMBER=#{postNumber} and USER_ID=#{userId} 
+	</select>
+</mapper>
+

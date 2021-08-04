@@ -1,0 +1,39 @@
+{
+  "name": "rtcmulticonnection",
+  "description": "RTCMultiConnection ",
+  "version": "3.7.0",
+  "authors": [
+    {
+      "name": "Muaz Khan",
+      "email": "muazkh@gmail.com",
+      "homepage": "https://muazkhan.com/"
+    }
+  ],
+  "main": "RTCMultiConnection.js",
+  "keywords": [
+    "webrtc",
+    "rtcmulticonnection",
+    "webrtc-library",
+    "library",
+    "javascript",
+    "chrome",
+    "firefox",
+    "opera",
+    "ie",
+    "internet-explorer",
+    "android",
+    "rtcweb",
+    "rtcmulticonnection.js",
+    "multirtc",
+    "webrtc-experiment",
+    "javascript-library",
+    "muaz",
+    "muaz-khan"
+  ],
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/muaz-khan/RTCMultiConnection.git"
+  },
+  "homepage": "https://rtcmulticonnection.herokuapp.com/voda/",
+  "ignore": ["**/.*", "node_modules", "test", "tests"]
+}

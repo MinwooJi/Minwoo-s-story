@@ -1,0 +1,17 @@
+{
+  "socketURL": "https://rtcmulticonnection.herokuapp.com:443/",
+  "dirPath": "",
+  "homePage": "/voda/index.html",
+  "socketMessageEvent": "RTCMultiConnection-Message",
+  "socketCustomEvent": "RTCMultiConnection-Custom-Message",
+  "port": "8001",
+  "enableLogs": "false",
+  "autoRebootServerOnFailure": "false",
+  "isUseHTTPs": "true",
+  "sslKey": "/etc/letsencrypt/live/j3d206.p.ssafy.io/privkey.pem",
+  "sslCert": "/etc/letsencrypt/live/j3d206.p.ssafy.io/cert.pem",
+  "sslCabundle": "/etc/letsencrypt/live/j3d206.p.ssafy.io/fullchain.pem",
+  "enableAdmin": "true",
+  "adminUserName": "username",
+  "adminPassword": "password"
+}

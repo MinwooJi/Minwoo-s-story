@@ -1,0 +1,1925 @@
+﻿<!-- Demo version: 2018.12.11 -->
+
+<!DOCTYPE html>
+<html lang="en" dir="ltr">
+  <head>
+    <meta charset="utf-8" />
+    <meta
+      name="viewport"
+      content="width=device-width, initial-scale=1, shrink-to-fit=no"
+    />
+    <title>VODA | roomJoin</title>
+    <meta
+      name="description"
+      content="WebRTC Dashboard including support for canvas drawing, canvas data syncing, video conferencing, screen sharing and video conferencing. Including chat and file sharing."
+    />
+
+    <link
+      rel="stylesheet"
+      type="text/css"
+      href="/voda/css/emojionearea.min.css"
+    />
+    <!-- fontawesome -->
+    <link
+      rel="stylesheet"
+      href="https://use.fontawesome.com/releases/v5.14.0/css/all.css"
+      integrity="sha384-HzLeBuhoNPvSl5KYnjx0BT+WB0QEEqLprO+NBkkk5gbc67FTaL7XIGa2w1L0Xbgc"
+      crossorigin="anonymous"
+    />
+    <script src="/voda/js/jquery.min.js"></script>
+    <link href="/voda/css/bootstrap.min.css" rel="stylesheet" />
+    <script src="/node_modules/webrtc-adapter/out/adapter.js"></script>
+    <script src="/voda/js/RTCMultiConnection.min.js"></script>
+    <script src="/socket.io/socket.io.js"></script>
+    <script src="/node_modules/fbr/FileBufferReader.js"></script>
+
+    <script src="/node_modules/canvas-designer/dev/webrtc-handler.js"></script>
+    <script src="/node_modules/canvas-designer/canvas-designer-widget.js"></script>
+    <script src="/voda/js/emojionearea.min.js"></script>
+    <!-- <script src="/node_modules/multistreamsmixer/MultiStreamsMixer.js"></script> -->
+  </head>
+  <body>
+    <style>
+      .extra-controls {
+        position: absolute;
+        right: 21%;
+      }
+
+      #btn-comments {
+        color: red;
+        margin-top: 5px;
+        font-size: 24px;
+        text-shadow: 1px 1px white;
+      }
+
+      #other-videos {
+        margin-top: 5px;
+      }
+      /*    6명일때
+
+        /* width: 31%;
+        margin: 5px;
+        border: 1px solid black;
+        padding: 1px;
+        border-radius: 3px; */
+      #other-videos video {
+        width: 45%;
+        height: 250px;
+        margin: 10px;
+        /* border: 1px solid black; */
+        padding: 1px;
+        border-radius: 3px;
+      }
+
+      #txt-chat-message {
+        width: 100%;
+        resize: vertical;
+        margin: 5px;
+        margin-right: 0;
+        min-height: 30px;
+      }
+
+      #btn-chat-message {
+        margin: 5px;
+      }
+
+      #conversation-panel {
+        margin-bottom: 20px;
+        text-align: left;
+        max-height: 180px;
+        overflow: auto;
+        border-top: 1px solid #e5e5e5;
+        width: 106%;
+      }
+
+      #conversation-panel .message {
+        border-bottom: 1px solid #e5e5e5;
+        padding: 5px 10px;
+      }
+
+      #conversation-panel .message img,
+      #conversation-panel .message video,
+      #conversation-panel .message iframe {
+        max-width: 100%;
+      }
+
+      #main-video {
+        width: 100%;
+        margin-top: -9px;
+        border-bottom: 1px solid #121010;
+        display: none;
+        padding-bottom: 1px;
+        display: none;
+      }
+
+      hr {
+        height: 1px;
+        border: 0;
+        background: #e5e5e5;
+      }
+
+      #btn-attach-file {
+        width: 25px;
+        vertical-align: middle;
+        cursor: pointer;
+        display: none;
+      }
+
+      .checkmark {
+        display: none;
+        width: 15px;
+        vertical-align: middle;
+      }
+
+      #screen-viewer {
+        position: fixed;
+        top: 0;
+        left: 0;
+        width: 100%;
+        height: 100%;
+        z-index: 9999999999999;
+        display: none;
+      }
+      #result {
+        margin-bottom: 20px;
+        padding: 10px 20px;
+        height: 300px;
+        /* border: solid 1px #000; */
+        border-radius: 6px;
+        overflow: auto;
+      }
+      #result span {
+        line-height: 1.5;
+      }
+
+      #btn-mic {
+        text-align: center;
+        min-width: 160px;
+      }
+      #btn-mic span {
+        display: inline-block;
+        margin: 1px 0 0 5px;
+        width: 10px;
+        height: 10px;
+        border: solid 1px #fff;
+        background: #bbb;
+        border-radius: 50%;
+      }
+      #btn-mic.on span {
+        background: green;
+      }
+      #icon-music {
+        display: none;
+        position: absolute;
+        top: 62px;
+        right: 70px;
+        font-size: 80px;
+      }
+      ul li {
+        font-size: 1em;
+      }
+
+      .red {
+        background: red;
+      }
+      .blue {
+        background: blue;
+        color: #fff !important;
+      }
+      .green {
+        background: green;
+      }
+      .yellow {
+        background: yellow;
+      }
+      .orange {
+        background: orange;
+      }
+      .grey {
+        background: grey;
+      }
+      .gold {
+        background: gold;
+      }
+      .white {
+        background: white;
+      }
+      .black {
+        background: black;
+        color: #fff !important;
+      }
+      .visible {
+        display: block !important;
+      }
+    </style>
+
+    <div class="all-box">
+      <div class="meetingroom">
+        <div id="sidebar" class="sidebar sidewidth">
+          <!-- <div
+          class="sidebar sidewidth"
+          style="
+            position: fixed;
+            bottom: 12%;
+            right: 0;
+            left: 80%;
+            height: 80%;
+            border: 1px solid black;
+            border-top: 0;
+            border-bottom: 0;
+            background-color: aqua;
+          "
+        > -->
+          <!--메인비디오  -->
+          <video id="main-video" controls playsinline autoplay></video>
+          <div id="participant">
+            <div id="onUserStatusChanged"></div>
+          </div>
+          <div class="btn-zip">
+            <input type="radio" id="chat-btn" name="button" checked="checked" />
+            <label for="chat-btn" id="chat-label" class="btn-item chat-btn"
+              >채팅</label
+            >
+            <input type="radio" id="parti-btn" name="button" />
+            <label for="parti-btn" id="parti-label" class="btn-item parti-btn"
+              >수어영상</label
+            >
+            <input type="radio" id="record-btn" name="button" />
+            <label
+              for="record-btn"
+              id="record-label"
+              class="btn-item record-btn"
+              >회의록</label
+            >
+          </div>
+          <div class="chosed-box">
+            <div id="chat-boxid" class="chat-box">
+              <!--chat  -->
+              <div id="chatboxact">
+                <div id="conversation-panel"></div>
+                <div
+                  id="key-press"
+                  style="text-align: right; display: none; font-size: 11px"
+                >
+                  <span style="vertical-align: middle"></span>
+                  <img
+                    src="https://www.webrtc-experiment.com/images/key-press.gif"
+                    style="height: 12px; vertical-align: middle"
+                  />
+                </div>
+
+                <textarea id="txt-chat-message"></textarea>
+                <button class="btn btn-primary" id="btn-chat-message" disabled>
+                  Send
+                </button>
+                <img
+                  id="btn-attach-file"
+                  src="https://www.webrtc-experiment.com/images/attach-file.png"
+                  title="Attach a File"
+                />
+              </div>
+            </div>
+            <div id="partici-boxid">
+              <div id="particiboxact" class="partici-box active">
+                <!-- 참가자 -->
+                <!-- <div style="padding: 5px 10px">
+                  <div id="onUserStatusChanged"></div>
+                </div> -->
+                <video
+                  autoplay="autoplay"
+                  muted="muted"
+                  id="player"
+                  class="playermp4"
+                  width="300px"
+                  height="225px"
+                  controls
+                >
+                  <source name="MMPlayer" type="video/mp4" />
+                </video>
+              </div>
+            </div>
+            <div id="recode-boxid">
+              <div id="recodeboxact" class="record-box active">
+                <!--stt  -->
+                <div id="result">
+                  <span class="final" id="final_span"></span>
+                  <span class="interim" id="interim_span"></span>
+                  <span class="log" id="audio_text_log"></span>
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+
+        <!-- containerA -->
+        <video
+          id="screen-viewer"
+          style="background-color: rgb(82, 124, 14)"
+          controls
+          playsinline
+          autoplay
+        ></video>
+
+        <div
+          id="containerA"
+          style="width: 80%; height: 100%; position: absolute; left: 0"
+        >
+          <!-- <video id="main-video" controls playsinline autoplay></video> -->
+          <div id="captiondiv" class="captionBox">
+            <!-- <p>here 자막자막자막</p> -->
+          </div>
+          <div id="other-videos"></div>
+
+          <canvas id="temp-stream-canvas" style="display: none"></canvas>
+        </div>
+      </div>
+
+      <div class="plus-box"></div>
+      <div class="meeting-bottom">
+        <div class="bottom-btn-box">
+          <div id="onoff-cam" class="onoff-cam circle-btn">
+            <i class="fas fa-camera fa-2x active"></i>
+            <p class="arrow_box">카메라</p>
+          </div>
+
+          <div id="onoff-mic" class="onoff-mike circle-btn">
+            <i class="fas fa-microphone fa-2x active"></i>
+            <p class="arrow_box">마이크</p>
+          </div>
+
+          <div id="onoff-caption" class="onoff-caption circle-btn">
+            <i class="fas fa-closed-captioning fa-2x active"></i>
+            <p class="arrow_box">자막</p>
+          </div>
+          <div id="onoff-data" id="navbartest" class="onoff-sign circle-btn">
+            <i class="fas fa-sign-language fa-2x"></i>
+            <p class="arrow_box">수어영상</p>
+          </div>
+          <div id="onoff-reg" class="onoff-5 circle-btn">
+            <i class="far fa-eye fa-2x"></i>
+            <p class="arrow_box">지어인식</p>
+          </div>
+
+          <!-- <div id="onoff-other" class="sidebar-btn circle-btn">
+            <i
+              class="fas fa-ellipsis-v fa-2x"
+              :style="{ color:white, background: none }"
+            ></i>
+            <p class="arrow_box">채팅/참가자/기록</p>
+          </div> -->
+        </div>
+      </div>
+    </div>
+    <!-- <script src="../js/main.js"></script> -->
+
+    <script>
+      let reg = false; // 기록
+      // let data = []; // 수어영상
+      // let newdata = []; // 추가할 수어영상
+      let caption_temp = "";
+      let prev_caption = "";
+      let data = [];
+      let newdata = [];
+      let hand_jesture_flag = false;
+      /*!
+       *
+       * WebRTC Lab
+       * @author dodortus (codejs.co.kr / dodortus@gmail.com)
+       *
+       */
+      let audio_log = "";
+      // let log_flag = false;
+      function hand_jesture_clock() {
+        console.log("hand_jesture_clock()");
+        console.log("caption_temp", caption_temp);
+        if (hand_jesture_flag) {
+          if (caption_temp != prev_caption) {
+            prev_caption = caption_temp;
+            asyncload_video_streams(caption_temp);
+          }
+          let timerId = setTimeout(hand_jesture_clock, 2000);
+        }
+      }
+
+      function asyncload_video_streams(send_data) {
+        console.log("asyncload_video_streams()");
+        console.log(send_data);
+        let obj_data = new Object();
+        // data.text = caption_temp;
+        obj_data.text = send_data;
+        $.ajax({
+          type: "POST",
+          data: obj_data,
+          url: "https://j3d206.p.ssafy.io/api/stt/",
+          dataType: "json",
+          success: function (data_mp4) {
+            // console.log("recieve!! :", data_mp4);
+            if (data.length) {
+              data.push(...data_mp4);
+            } else {
+              data.push(...data_mp4);
+              // console.log(data);
+              video_streamer();
+            }
+          },
+        });
+      }
+      function video_streamer() {
+        console.log("video_streamer()");
+
+        document.getElementById("player").src = data[0];
+
+        // document.getElementById("player").src = data[0];
+        console.log("DATA!!!!", data);
+        // console.log("check!!!!", data[0]);
+        document
+          .getElementById("player")
+          .addEventListener("ended", function () {
+            data.shift();
+            if (data.length == 0) {
+              return; // 리턴안하고 아래줄을 if문으로 실행하는 listener만들기 listener는 클릭이벤트에따라 변화하는 boolenan을 볼것
+            }
+            document.getElementById("player").src = data[0];
+            console.log("check!!!!", data[0]);
+          });
+      }
+      var converlogPanel = document.getElementById("result");
+
+      function audio_log_listener() {
+        if (!$("#recodeboxact").hasClass("active")) {
+          console.log(audio_log);
+          audio_text_log.innerHTML = "<p>" + audio_log + "</p>";
+          setTimeout(audio_log_listener, 3000); // scroll 하단으로
+          converlogPanel.scrollTop = converlogPanel.clientHeight;
+          converlogPanel.scrollTop =
+            converlogPanel.scrollHeight - converlogPanel.scrollTop;
+        }
+      }
+
+      const FIRST_CHAR = /\S/;
+      const TWO_LINE = /\n\n/g;
+      const ONE_LINE = /\n/g;
+
+      const recognition = new webkitSpeechRecognition();
+      const language = "ko-KR";
+      const $audio = document.querySelector("#audio");
+      // const $btnMic = document.querySelector("#btn-mic");
+      const $resultWrap = document.querySelector("#result");
+      const $iconMusic = document.querySelector("#icon-music");
+
+      let isRecognizing = false;
+      let ignoreEndProcess = false;
+      let finalTranscript = "";
+
+      recognition.continuous = true;
+      recognition.interimResults = true;
+
+      /**
+       * 음성 인식 시작 처리                ###############
+       */
+      recognition.onstart = function () {
+        console.log("onstart", arguments);
+        isRecognizing = true;
+        // $btnMic.className = "on";
+      };
+
+      /**
+       * 음성 인식 종료 처리
+       */
+      recognition.onend = function () {
+        console.log("onend", arguments);
+        recognition.onstart();
+        if (ignoreEndProcess) {
+          return false;
+        }
+
+        // DO end process
+        // $btnMic.className = "off";
+        if (!finalTranscript) {
+          console.log("empty finalTranscript");
+          return false;
+        }
+      };
+
+      /**
+       * 음성 인식 결과 처리
+       */
+      recognition.onresult = function (event) {
+        console.log("onresult", event);
+
+        let interimTranscript = "";
+        // if (typeof event.results === "undefined") {
+        //   recognition.onend = null;
+        //   recognition.stop();
+        //   return;
+        // }
+
+        for (let i = event.resultIndex; i < event.results.length; ++i) {
+          const transcript = event.results[i][0].transcript;
+
+          //말이 입력이 완료되면
+          if (event.results[i].isFinal) {
+            finalTranscript += transcript;
+            // console.log(transcript);
+            // localStorage.setItem("text", finalTranscript);
+            // localStorage.setItem("sub", transcript);
+            var checkmark_id = params.userFullName;
+
+            // 음성데이터 보내는 곳!
+            // appendChatMessage(transcript, checkmark_id);
+            console.log("ID : ", checkmark_id);
+            console.log("보낸 음성데이터는 : ", transcript);
+            caption_temp = transcript;
+            captiondiv.innerHTML =
+              "<p>" + checkmark_id + " : " + transcript + "</p>";
+            audio_log += checkmark_id + " : " + transcript + "<br/>";
+
+            connection.send({
+              chatMessage: transcript,
+              checkmark_id: checkmark_id,
+              audio: true,
+            });
+
+            connection.send({
+              typing: false,
+            });
+
+            // final_span.innerHTML = transcript;
+            //장고 형태소 분석
+            // var xhr = new XMLHttpRequest();
+
+            // xhr.open("POST", encodeURI("http://localhost:8000/api/stt/"), true);
+            // xhr.setRequestHeader("Content-Type", "application/json");
+
+            // xhr.onreadystatechange = function () {
+            //   if (xhr.readyState == 4 && xhr.status == 200) {
+            //     console.log(xhr.responseText);
+            //   }
+            // };
+            // //json으로 변경
+            // data = new Object();
+            // data.text = transcript;
+            // // console.log(JSON.stringify(data));
+            // xhr.send(JSON.stringify(data));
+          } else {
+            interimTranscript += transcript;
+          }
+        }
+
+        // finalTranscript = capitalize(finalTranscript);
+        // final_span.innerHTML = linebreak(finalTranscript);
+        // interim_span.innerHTML = linebreak(interimTranscript);
+
+        // console.log("finalTranscript", finalTranscript);
+        // console.log("interimTranscript", interimTranscript);
+      };
+
+      /**
+       * 음성 인식 에러 처리
+       */
+      recognition.onerror = function (event) {
+        console.log("onerror", event);
+
+        if (event.error.match(/no-speech|audio-capture|not-allowed/)) {
+          ignoreEndProcess = true;
+        }
+
+        // $btnMic.className = "off";
+      };
+
+      /**
+       * 음성 인식 트리거
+       */
+      function start() {
+        if (isRecognizing) {
+          recognition.stop();
+          return;
+        }
+        recognition.lang = language;
+        recognition.start();
+        ignoreEndProcess = false;
+
+        finalTranscript = "";
+        final_span.innerHTML = "";
+        interim_span.innerHTML = "";
+      }
+      /**
+       * 초기 바인딩
+       */
+      function initialize() {
+        // const $btnTTS = document.querySelector("#btn-tts");
+        // const defaultMsg = "전 음성 인식된 글자를 읽습니다.";
+
+        // $btnTTS.addEventListener("click", () => {
+        //   const text = final_span.innerText || defaultMsg;
+        //   textToSpeech(text);
+        // });
+
+        // $btnMic.addEventListener("click", start);
+
+        start();
+      }
+
+      initialize();
+
+      (function () {
+        var params = {},
+          r = /([^&=]+)=?([^&]*)/g;
+
+        function d(s) {
+          return decodeURIComponent(s.replace(/\+/g, " "));
+        }
+        var match,
+          search = window.location.search; //?open=true&sessionid=123&publicRoomIdentifier=voda&userFullName=123
+        while ((match = r.exec(search.substring(1))))
+          params[d(match[1])] = d(match[2]);
+        window.params = params; //파라미터
+      })();
+
+      var connection = new RTCMultiConnection();
+
+      // connection.socketURL = "/";
+      connection.socketURL = "https://rtcmulticonnection.herokuapp.com:443/";
+
+      connection.extra.userFullName = params.userFullName;
+
+      /// make this room public
+      connection.publicRoomIdentifier = params.publicRoomIdentifier;
+
+      connection.socketMessageEvent = "canvas-dashboard-demo";
+
+      // keep room opened even if owner leaves
+      connection.autoCloseEntireSession = true;
+      connection.onmute = function (e) {
+        e.mediaElement.setAttribute(
+          "poster",
+          "//cdn.pixabay.com/photo/2017/11/10/05/04/camera-2935403_960_720.png"
+        );
+      };
+
+      // if local or remote stream is unmuted
+      connection.onunmute = function (e) {
+        e.mediaElement.removeAttribute("poster");
+      };
+      // https://www.rtcmulticonnection.org/docs/maxParticipantsAllowed/
+      connection.maxParticipantsAllowed = 5;
+      // set value 2 for one-to-one connection
+      // connection.maxParticipantsAllowed = 2;
+
+      // here goes canvas designer
+      var designer = new CanvasDesigner();
+
+      // you can place widget.html anywhere
+      // designer.widgetHtmlURL = "/node_modules/canvas-designer/widget.html";
+      // designer.widgetJsURL = "/node_modules/canvas-designer/widget.min.js";
+
+      designer.addSyncListener(function (data) {
+        connection.send(data);
+      });
+
+      // designer.setSelected("pencil");
+
+      // designer.setTools({
+      //   pencil: true,
+      //   text: true,
+      //   image: true,
+      //   pdf: true,
+      //   eraser: true,
+      //   line: true,
+      //   arrow: true,
+      //   dragSingle: true,
+      //   dragMultiple: true,
+      //   arc: true,
+      //   rectangle: true,
+      //   quadratic: false,
+      //   bezier: true,
+      //   marker: true,
+      //   zoom: false,
+      //   lineWidth: false,
+      //   colorsPicker: false,
+      //   extraOptions: false,
+      //   code: false,
+      //   undo: true,
+      // });
+
+      // here goes RTCMultiConnection
+
+      connection.chunkSize = 16000;
+      connection.enableFileSharing = true;
+
+      connection.session = {
+        audio: true,
+        video: true,
+        data: true,
+      };
+      connection.sdpConstraints.mandatory = {
+        OfferToReceiveAudio: true,
+        OfferToReceiveVideo: true,
+      };
+      connection.iceServers = [
+        {
+          urls: [
+            "stun:stun.l.google.com:19302",
+            "stun:stun1.l.google.com:19302",
+            "stun:stun2.l.google.com:19302",
+            "stun:stun.l.google.com:19302?transport=udp",
+          ],
+        },
+      ];
+      connection.onUserStatusChanged = function (event) {
+        var infoBar = document.getElementById("onUserStatusChanged");
+        var names = [];
+        connection.getAllParticipants().forEach(function (pid) {
+          names.push(getFullName(pid));
+        });
+
+        if (!names.length) {
+          names = ["Only You"];
+        } else {
+          names = [connection.extra.userFullName || "You"].concat(names);
+        }
+
+        infoBar.innerHTML = "<b>Participant users:</b><br> " + names.join(", ");
+      };
+
+      connection.onopen = function (event) {
+        connection.onUserStatusChanged(event);
+
+        if (designer.pointsLength <= 0) {
+          // make sure that remote user gets all drawings synced.
+          setTimeout(function () {
+            connection.send("plz-sync-points");
+          }, 1000);
+        }
+
+        document.getElementById("btn-chat-message").disabled = false;
+        document.getElementById("btn-attach-file").style.display =
+          "inline-block";
+      };
+
+      connection.onclose = connection.onerror = connection.onleave = function (
+        event
+      ) {
+        connection.onUserStatusChanged(event);
+      };
+
+      connection.onmessage = function (event) {
+        if (event.data.audio) {
+          // 음성데이터일때
+          audio_log +=
+            event.data.checkmark_id + " : " + event.data.chatMessage + "<br/>";
+          // 수화영상 찾는 통신 실행할것...
+          console.log("받은 음성데이터는 : ", event.data.chatMessage);
+          console.log("보낸사람 : ", event.data.checkmark_id);
+          caption_temp = event.data.chatMessage;
+          captiondiv.innerHTML =
+            "<p>" +
+            event.data.checkmark_id +
+            " : " +
+            event.data.chatMessage +
+            "</p>";
+          console.log("#LOG# ", audio_log);
+        } else {
+          if (event.data.showMainVideo) {
+            // $('#main-video').show();
+            $("#screen-viewer").css({
+              top: $("#widget-container").offset().top,
+              left: $("#widget-container").offset().left,
+              width: $("#widget-container").width(),
+              height: $("#widget-container").height(),
+            });
+            $("#screen-viewer").show();
+            return;
+          }
+          // alert(localStorage.getItem("sub"));
+
+          // if (localStorage.getItem("sub").length !== 0) {
+          //  // alert(localStorage.getItem("sub"));
+          //  final_span.innerHTML = localStorage.getItem("sub");
+          // }
+          if (event.data.hideMainVideo) {
+            // $('#main-video').hide();
+            $("#screen-viewer").hide();
+            return;
+          }
+
+          if (event.data.typing === true) {
+            $("#key-press")
+              .show()
+              .find("span")
+              .html(event.extra.userFullName + " is typing");
+            return;
+          }
+
+          if (event.data.typing === false) {
+            $("#key-press").hide().find("span").html("");
+            return;
+          }
+
+          if (event.data.chatMessage) {
+            appendChatMessage(event);
+            return;
+          }
+
+          if (event.data.checkmark === "received") {
+            var checkmarkElement = document.getElementById(
+              event.data.checkmark_id
+            );
+            if (checkmarkElement) {
+              checkmarkElement.style.display = "inline";
+            }
+            return;
+          }
+
+          if (event.data === "plz-sync-points") {
+            designer.sync();
+            return;
+          }
+
+          designer.syncData(event.data);
+        }
+      };
+
+      // extra code
+
+      connection.onstream = function (event) {
+        if (event.stream.isScreen && !event.stream.canvasStream) {
+          $("#screen-viewer").get(0).srcObject = event.stream;
+          $("#screen-viewer").hide();
+        } else if (event.extra.roomOwner === true) {
+          var video = document.getElementById("main-video");
+          video.setAttribute("data-streamid", event.streamid);
+          // video.style.display = 'none';
+          if (event.type === "remote") {
+            video.muted = true;
+            video.volume = 0;
+          }
+          video.srcObject = event.stream;
+          $("#main-video").show();
+        } else {
+          event.mediaElement.controls = false;
+
+          var otherVideos = document.querySelector("#other-videos");
+          otherVideos.appendChild(event.mediaElement);
+        }
+
+        connection.onUserStatusChanged(event);
+      };
+
+      connection.onstreamended = function (event) {
+        var video = document.querySelector(
+          'video[data-streamid="' + event.streamid + '"]'
+        );
+        if (!video) {
+          video = document.getElementById(event.streamid);
+          if (video) {
+            video.parentNode.removeChild(video);
+            return;
+          }
+        }
+        if (video) {
+          video.srcObject = null;
+          video.style.display = "none";
+        }
+      };
+
+      var conversationPanel = document.getElementById("conversation-panel");
+
+      function appendChatMessage(event, checkmark_id) {
+        var div = document.createElement("div");
+
+        div.className = "message";
+
+        if (event.data) {
+          div.innerHTML =
+            "<b>" +
+            (event.extra.userFullName || event.userid) +
+            ":</b><br>" +
+            event.data.chatMessage;
+
+          if (event.data.checkmark_id) {
+            connection.send({
+              checkmark: "received",
+              checkmark_id: event.data.checkmark_id,
+            });
+          }
+        } else {
+          div.innerHTML =
+            '<b>You:</b> <img class="checkmark" id="' +
+            checkmark_id +
+            '" title="Received" src="https://www.webrtc-experiment.com/images/checkmark.png"><br>' +
+            event;
+          div.style.background = "#cbffcb";
+        }
+        div.style.background = "#a08eff";
+        conversationPanel.appendChild(div);
+
+        conversationPanel.scrollTop = conversationPanel.clientHeight;
+        conversationPanel.scrollTop =
+          conversationPanel.scrollHeight - conversationPanel.scrollTop;
+      }
+
+      var keyPressTimer;
+      var numberOfKeys = 0;
+      $("#txt-chat-message").emojioneArea({
+        pickerPosition: "top",
+        filtersPosition: "bottom",
+        tones: false,
+        autocomplete: true,
+        inline: true,
+        hidePickerOnBlur: true,
+        events: {
+          focus: function () {
+            $(".emojionearea-category")
+              .unbind("click")
+              .bind("click", function () {
+                $(".emojionearea-button-close").click();
+              });
+          },
+          keyup: function (e) {
+            var chatMessage = $(".emojionearea-editor").html();
+            if (!chatMessage || !chatMessage.replace(/ /g, "").length) {
+              connection.send({
+                typing: false,
+              });
+            }
+
+            clearTimeout(keyPressTimer);
+            numberOfKeys++;
+
+            if (numberOfKeys % 3 === 0) {
+              connection.send({
+                typing: true,
+              });
+            }
+
+            keyPressTimer = setTimeout(function () {
+              connection.send({
+                typing: false,
+              });
+            }, 1200);
+          },
+          blur: function () {
+            // $('#btn-chat-message').click();
+            connection.send({
+              typing: false,
+            });
+          },
+        },
+      });
+
+      window.onkeyup = function (e) {
+        var code = e.keyCode || e.which;
+        if (code == 13) {
+          $("#btn-chat-message").click();
+        }
+      };
+
+      document.getElementById("btn-chat-message").onclick = function () {
+        var chatMessage = $(".emojionearea-editor").html();
+        $(".emojionearea-editor").html("");
+
+        if (!chatMessage || !chatMessage.replace(/ /g, "").length) return;
+
+        var checkmark_id = connection.userid + connection.token();
+
+        appendChatMessage(chatMessage, checkmark_id);
+
+        connection.send({
+          chatMessage: chatMessage,
+          checkmark_id: checkmark_id,
+        });
+
+        connection.send({
+          typing: false,
+        });
+      };
+
+      var recentFile;
+      document.getElementById("btn-attach-file").onclick = function () {
+        var file = new FileSelector();
+        file.selectSingleFile(function (file) {
+          recentFile = file;
+
+          if (connection.getAllParticipants().length >= 1) {
+            recentFile.userIndex = 0;
+            connection.send(
+              file,
+              connection.getAllParticipants()[recentFile.userIndex]
+            );
+          }
+        });
+      };
+      //     front func
+      function colorchangeSignRecog() {
+        var signRecog = false;
+        alert(signRecog);
+      }
+
+      function getFileHTML(file) {
+        var url = file.url || URL.createObjectURL(file);
+        var attachment =
+          '<a href="' +
+          url +
+          '" target="_blank" download="' +
+          file.name +
+          '">Download: <b>' +
+          file.name +
+          "</b></a>";
+        if (file.name.match(/\.jpg|\.png|\.jpeg|\.gif/gi)) {
+          attachment += '<br><img crossOrigin="anonymous" src="' + url + '">';
+        } else if (file.name.match(/\.wav|\.mp3/gi)) {
+          attachment += '<br><audio src="' + url + '" controls></audio>';
+        } else if (file.name.match(/\.pdf|\.js|\.txt|\.sh/gi)) {
+          attachment +=
+            '<iframe class="inline-iframe" src="' + url + '"></iframe></a>';
+        }
+        return attachment;
+      }
+
+      function getFullName(userid) {
+        var _userFullName = userid;
+        if (
+          connection.peers[userid] &&
+          connection.peers[userid].extra.userFullName
+        ) {
+          _userFullName = connection.peers[userid].extra.userFullName;
+        }
+        return _userFullName;
+      }
+
+      connection.onFileEnd = function (file) {
+        var html = getFileHTML(file);
+        var div = progressHelper[file.uuid].div;
+
+        if (file.userid === connection.userid) {
+          div.innerHTML = "<b>You:</b><br>" + html;
+          div.style.background = "#a08eff";
+
+          if (recentFile) {
+            recentFile.userIndex++;
+            var nextUserId = connection.getAllParticipants()[
+              recentFile.userIndex
+            ];
+            if (nextUserId) {
+              connection.send(recentFile, nextUserId);
+            } else {
+              recentFile = null;
+            }
+          } else {
+            recentFile = null;
+          }
+        } else {
+          div.innerHTML = "<b>" + getFullName(file.userid) + ":</b><br>" + html;
+        }
+      };
+
+      // to make sure file-saver dialog is not invoked.
+      connection.autoSaveToDisk = false;
+
+      var progressHelper = {};
+
+      connection.onFileProgress = function (chunk, uuid) {
+        var helper = progressHelper[chunk.uuid];
+        helper.progress.value =
+          chunk.currentPosition || chunk.maxChunks || helper.progress.max;
+        updateLabel(helper.progress, helper.label);
+      };
+
+      connection.onFileStart = function (file) {
+        var div = document.createElement("div");
+        div.className = "message";
+
+        if (file.userid === connection.userid) {
+          var userFullName = file.remoteUserId;
+          if (connection.peersBackup[file.remoteUserId]) {
+            userFullName =
+              connection.peersBackup[file.remoteUserId].extra.userFullName;
+          }
+
+          div.innerHTML =
+            "<b>You (to: " +
+            userFullName +
+            "):</b><br><label>0%</label> <progress></progress>";
+          div.style.background = "#a08eff";
+        } else {
+          div.innerHTML =
+            "<b>" +
+            getFullName(file.userid) +
+            ":</b><br><label>0%</label> <progress></progress>";
+        }
+
+        div.title = file.name;
+        conversationPanel.appendChild(div);
+        progressHelper[file.uuid] = {
+          div: div,
+          progress: div.querySelector("progress"),
+          label: div.querySelector("label"),
+        };
+        progressHelper[file.uuid].progress.max = file.maxChunks;
+
+        conversationPanel.scrollTop = conversationPanel.clientHeight;
+        conversationPanel.scrollTop =
+          conversationPanel.scrollHeight - conversationPanel.scrollTop;
+      };
+
+      function updateLabel(progress, label) {
+        if (progress.position == -1) return;
+        var position = +progress.position.toFixed(2).split(".")[1] || 100;
+        label.innerHTML = position + "%";
+      }
+
+      if (!!params.password) {
+        connection.password = params.password;
+      }
+
+      designer.appendTo(document.getElementById("sidebar"), function () {
+        if (params.open === true || params.open === "true") {
+          var tempStreamCanvas = document.getElementById("temp-stream-canvas");
+          var tempStream = tempStreamCanvas.captureStream();
+          tempStream.isScreen = true;
+          tempStream.streamid = tempStream.id;
+          tempStream.type = "local";
+          connection.attachStreams.push(tempStream);
+          window.tempStream = tempStream;
+
+          connection.extra.roomOwner = true;
+          connection.open(params.sessionid, function (
+            isRoomOpened,
+            roomid,
+            error
+          ) {
+            if (error) {
+              if (error === connection.errors.ROOM_NOT_AVAILABLE) {
+                alert(
+                  "Someone already created this room. Please either join or create a separate room."
+                );
+                return;
+              }
+              alert(error);
+            }
+
+            connection.socket.on("disconnect", function () {
+              location.reload();
+            });
+          });
+        } else {
+          connection.join(params.sessionid, function (
+            isRoomJoined,
+            roomid,
+            error
+          ) {
+            if (error) {
+              if (error === connection.errors.ROOM_NOT_AVAILABLE) {
+                alert(
+                  "This room does not exist. Please either create it or wait for moderator to enter in the room."
+                );
+                return;
+              }
+              if (error === connection.errors.ROOM_FULL) {
+                alert("Room is full.");
+                return;
+              }
+              if (error === connection.errors.INVALID_PASSWORD) {
+                connection.password =
+                  prompt("Please enter room password.") || "";
+                if (!connection.password.length) {
+                  alert("Invalid password.");
+                  return;
+                }
+                connection.join(params.sessionid, function (
+                  isRoomJoined,
+                  roomid,
+                  error
+                ) {
+                  if (error) {
+                    alert(error);
+                  }
+                });
+                return;
+              }
+              alert(error);
+            }
+
+            connection.socket.on("disconnect", function () {
+              location.reload();
+            });
+          });
+        }
+      });
+
+      function addStreamStopListener(stream, callback) {
+        stream.addEventListener(
+          "ended",
+          function () {
+            callback();
+            callback = function () {};
+          },
+          false
+        );
+
+        stream.addEventListener(
+          "inactive",
+          function () {
+            callback();
+            callback = function () {};
+          },
+          false
+        );
+
+        stream.getTracks().forEach(function (track) {
+          track.addEventListener(
+            "ended",
+            function () {
+              callback();
+              callback = function () {};
+            },
+            false
+          );
+
+          track.addEventListener(
+            "inactive",
+            function () {
+              callback();
+              callback = function () {};
+            },
+            false
+          );
+        });
+      }
+
+      function replaceTrack(videoTrack, screenTrackId) {
+        if (!videoTrack) return;
+        if (videoTrack.readyState === "ended") {
+          alert(
+            'Can not replace an "ended" track. track.readyState: ' +
+              videoTrack.readyState
+          );
+          return;
+        }
+        connection.getAllParticipants().forEach(function (pid) {
+          var peer = connection.peers[pid].peer;
+          if (!peer.getSenders) return;
+          var trackToReplace = videoTrack;
+          peer.getSenders().forEach(function (sender) {
+            if (!sender || !sender.track) return;
+            if (screenTrackId) {
+              if (trackToReplace && sender.track.id === screenTrackId) {
+                sender.replaceTrack(trackToReplace);
+                trackToReplace = null;
+              }
+              return;
+            }
+
+            if (sender.track.id !== tempStream.getTracks()[0].id) return;
+            if (sender.track.kind === "video" && trackToReplace) {
+              sender.replaceTrack(trackToReplace);
+              trackToReplace = null;
+            }
+          });
+        });
+      }
+
+      function replaceScreenTrack(stream) {
+        stream.isScreen = true;
+        stream.streamid = stream.id;
+        stream.type = "local";
+
+        // connection.attachStreams.push(stream);
+        connection.onstream({
+          stream: stream,
+          type: "local",
+          streamid: stream.id,
+          // mediaElement: video
+        });
+
+        var screenTrackId = stream.getTracks()[0].id;
+        addStreamStopListener(stream, function () {
+          connection.send({
+            hideMainVideo: true,
+          });
+
+          // $('#main-video').hide();
+          $("#screen-viewer").hide();
+
+          replaceTrack(tempStream.getTracks()[0], screenTrackId);
+        });
+
+        stream.getTracks().forEach(function (track) {
+          if (track.kind === "video" && track.readyState === "live") {
+            replaceTrack(track);
+          }
+        });
+
+        connection.send({
+          showMainVideo: true,
+        });
+
+        // $('#main-video').show();
+        $("#screen-viewer").css({
+          top: $("#sidebar").offset().top,
+          left: $("#sidebar").offset().left,
+          width: $("#sidebar").width(),
+          height: $("#sidebar").height(),
+        });
+        $("#screen-viewer").show();
+      }
+
+      // 수어영상
+      function onsignvideomenu() {
+        console.log("######### 실행됨@");
+        menuactiveis = $("#onoff-data i").hasClass("active");
+        // alert("!!!");
+        if (!menuactiveis) {
+          $("#onoff-data i").addClass("active");
+        }
+        if (
+          $("#onoff-data i").hasClass("active") ||
+          $("#onoff-data i").hasClass("active")
+        ) {
+          //video_streamer();
+          // ajax
+          hand_jesture_flag = true;
+          hand_jesture_clock();
+
+          //if (data.length) {
+          //  data.push(...newdata);
+          //} else {
+          //  data.push(...newdata);
+          //  video_streamer();
+          // }
+        }
+      }
+      function onsignvideo() {
+        onsignvideomenu();
+
+        chatactiveis = $("#chatboxact").hasClass("active");
+        particiactiveis = $("#particiboxact").hasClass("active");
+        recodeactiveis = $("#recodeboxact").hasClass("active");
+
+        if (!chatactiveis) {
+          $("#chatboxact").addClass("active");
+        }
+        if (particiactiveis) {
+          $("#particiboxact").removeClass("active");
+        }
+        if (!recodeactiveis) {
+          $("#recodeboxact").addClass("active");
+        }
+
+        document.getElementById("parti-btn").checked = true;
+      }
+      function offsignvideomenu() {
+        menuactiveis = $("#onoff-data i").hasClass("active");
+        if (menuactiveis) {
+          $("#onoff-data i").removeClass("active");
+          data = []; // 수어영상
+          newdata = []; // 추가할 수어영상
+          hand_jesture_flag = false;
+          // $("#player").stop();
+          // document.getElementById("player").src = "";
+          console.log("DATA 삭제 : ", data);
+          // alert("바뀌었어요!");
+        }
+      }
+      function offsignvideo() {
+        offsignvideomenu();
+
+        chatactiveis = $("#chatboxact").hasClass("active");
+        particiactiveis = $("#particiboxact").hasClass("active");
+        recodeactiveis = $("#recodeboxact").hasClass("active");
+
+        if (chatactiveis) {
+          $("#chatboxact").removeClass("active");
+        }
+        if (!particiactiveis) {
+          $("#particiboxact").addClass("active");
+        }
+        if (!recodeactiveis) {
+          $("#recodeboxact").addClass("active");
+        }
+
+        document.getElementById("chat-btn").checked = true;
+      }
+      //    button func
+      // 캠 끄기
+      $("#onoff-cam i").click(function (e) {
+        camactiveis = $("#onoff-cam i").hasClass("active");
+
+        var streamByUserId = connection.streamEvents.selectFirst({
+          userid: connection.userid,
+        }).stream;
+        if (camactiveis) {
+          streamByUserId.mute("video");
+          $(this).removeClass("active");
+        } else {
+          streamByUserId.unmute("video");
+          $(this).addClass("active");
+        }
+      });
+      // 마이크 끄기
+      $("#onoff-mic i").click(function () {
+        micactiveis = $("#onoff-mic i").hasClass("active");
+        var streamByUserId = connection.streamEvents.selectFirst({
+          userid: connection.userid,
+        }).stream;
+        if (micactiveis) {
+          streamByUserId.mute("audio");
+          recognition.stop();
+          $(this).removeClass("active");
+        } else {
+          streamByUserId.unmute("audio");
+          recognition.start();
+          $(this).addClass("active");
+        }
+        // $(this).toggleClass("active");
+        // alert("onoff-mic");
+      });
+      $("#onoff-caption i").click(function () {
+        $(this).toggleClass("active");
+
+        captionactiveis = $("#captiondiv").hasClass("activecaption");
+
+        if (captionactiveis) {
+          $("#captiondiv").removeClass("activecaption");
+        }
+        if (!captionactiveis) {
+          $("#captiondiv").addClass("activecaption");
+        }
+      });
+      $("#onoff-data i").click(function () {
+        menuactiveis = $("#onoff-data i").hasClass("active");
+        if (!menuactiveis) {
+          onsignvideo();
+        }
+        if (menuactiveis) {
+          offsignvideo();
+        }
+      });
+      $("#onoff-reg i").click(function () {
+        $(this).toggleClass("active");
+        if ($(this).hasClass("active")) {
+          let url = "../../hand/dist/index.html";
+          let name = "check!!";
+          let specs =
+            "width=640px,height=480px,top=200,left=100,toolbar=no,menubar=no,resizable=yes";
+          w = window.open(url, name, specs);
+          w.onbeforeunload = function () {
+            localStorage.removeItem("handjesture-message");
+            $("#onoff-reg i").toggleClass("active");
+          };
+        }
+        // alert("onoff-reg");
+      });
+
+      // $("#onoff-other i").click(function () {
+      //   $(this).toggleClass("active");
+      //   alert("onoff-other");
+      // });
+      // siedbar menu
+      $("#chat-label").click(function () {
+        offsignvideomenu();
+        chatactiveis = $("#chatboxact").hasClass("active");
+        particiactiveis = $("#particiboxact").hasClass("active");
+        recodeactiveis = $("#recodeboxact").hasClass("active");
+
+        if (chatactiveis) {
+          $("#chatboxact").removeClass("active");
+        }
+        if (!particiactiveis) {
+          $("#particiboxact").addClass("active");
+        }
+        if (!recodeactiveis) {
+          $("#recodeboxact").addClass("active");
+        }
+      });
+      $("#parti-label").click(function () {
+        onsignvideomenu();
+        chatactiveis = $("#chatboxact").hasClass("active");
+        particiactiveis = $("#particiboxact").hasClass("active");
+        recodeactiveis = $("#recodeboxact").hasClass("active");
+
+        if (!chatactiveis) {
+          $("#chatboxact").addClass("active");
+        }
+        if (particiactiveis) {
+          $("#particiboxact").removeClass("active");
+        }
+        if (!recodeactiveis) {
+          $("#recodeboxact").addClass("active");
+        }
+      });
+      $("#record-label").click(function () {
+        offsignvideomenu();
+        chatactiveis = $("#chatboxact").hasClass("active");
+        particiactiveis = $("#particiboxact").hasClass("active");
+        recodeactiveis = $("#recodeboxact").hasClass("active");
+        if (!chatactiveis) {
+          $("#chatboxact").addClass("active");
+        }
+        if (!particiactiveis) {
+          $("#particiboxact").addClass("active");
+        }
+        if (recodeactiveis) {
+          // alert("여기?");
+          console.log("click!");
+          // log_flag = recodeactiveis;
+          $("#recodeboxact").removeClass("active");
+          audio_log_listener();
+        }
+      });
+      function StartClock() {
+        if (localStorage.getItem("handjesture-message")) {
+          // 지화 문자조합가져오기
+          var checkmark_id = params.userFullName;
+          handscript = localStorage.getItem("handjesture-message");
+          console.log("result !  : ", handscript);
+          connection.send({
+            chatMessage: handscript,
+            checkmark_id: checkmark_id,
+            audio: true,
+          });
+
+          connection.send({
+            typing: false,
+          });
+          caption_temp = handscript;
+          captiondiv.innerHTML =
+            "<p>" + checkmark_id + " : " + handscript + "</p>";
+          audio_log += checkmark_id + " : " + handscript + "<br/>";
+          // 뿌려주기
+
+          // handscript = ""
+          localStorage.removeItem("handjesture-message");
+        }
+        let timerId = setTimeout(StartClock, 2000);
+      }
+      StartClock();
+    </script>
+  </body>
+  <style type="text/css">
+    .playermp4 {
+      margin-top: 60px;
+    }
+    /* caption */
+
+    #containerA div.activecaption {
+      display: none;
+    }
+
+    /* chat */
+    .onUserStatusChanged {
+      padding: 5px 10px;
+      height: 100px;
+      background: #252424;
+    }
+
+    #btn-chat-message {
+      margin: 5px;
+      width: 80%;
+    }
+    .btn-primary {
+      background-color: #42025d66;
+      border-color: #42025d66;
+    }
+    .btn-primary:disabled {
+      background-color: #42025d66;
+      border-color: #42025d66;
+    }
+    /* side menu */
+
+    #chatboxact {
+      margin-top: 20px;
+      position: absolute;
+      bottom: 0;
+      background: #a08eff;
+      padding-bottom: 20px;
+      width: 90%;
+      left: 20px;
+    }
+    #chat-boxid div.active {
+      background: rgb(176, 70, 180);
+      display: none;
+    }
+
+    #partici-boxid div.active {
+      display: none;
+    }
+    #recode-boxid div.active {
+      display: none;
+    }
+    /* button */
+    .circle-btn i.active {
+      background: rgb(176, 70, 180);
+    }
+    #sidebar-btn i {
+      background: none;
+    }
+    #sidebar-btn i.active,
+    #sidebar-btn i.active:before {
+      background: rgb(176, 70, 180);
+    }
+
+    #sidebar-btn i.active {
+      color: #a887ff;
+      background: white;
+    }
+
+    .changeWidth {
+      margin-right: 300px;
+      width: calc(100vw - 300px);
+    }
+    .all-box {
+      font-family: "Jua", sans-serif;
+      height: 100vh;
+      width: 100vw;
+      overflow: hidden;
+      position: relative;
+    }
+    .meetingroom {
+      background: rgba(14, 13, 13, 0.904);
+      height: calc(100% - 80px);
+      top: 0;
+      left: 0;
+      right: 0;
+      bottom: 0;
+      color: rgb(255, 255, 255);
+      font-size: 20px;
+      /* overflow: hidden; */
+    }
+    .videoBox {
+      padding: 50px;
+      height: calc(100%-80px);
+      position: relative;
+      top: 0%;
+    }
+
+    .video {
+      display: grid;
+      grid-gap: 8px;
+      grid-template-columns: repeat(auto-fit, minmax(30%, auto));
+      grid-template-rows: repeat(auto-fit, minmax(50%, auto));
+      justify-content: center;
+      line-height: 100%;
+      /* place-items: center; */
+      white-space: nowrap;
+      /* min-height: 100vh; */
+    }
+    .video div {
+      box-sizing: border-box;
+    }
+    .video-one {
+      padding-bottom: 56.26%;
+      background-color: white;
+    }
+    .captionBox {
+      /* margin-bottom: 100px; */
+      position: relative;
+      top: 0%;
+      left: 50%;
+      margin: 0 auto;
+      transform: translate(-50%, 0%);
+      /* background: rgba(107, 83, 136, 0.87); */
+      width: 100%;
+      height: 30px;
+      padding: 5px 20px;
+      /* 가운데 정렬 */
+      margin: 0 auto 50px auto;
+    }
+    .captionBox p {
+      background: rgba(107, 83, 136, 0.87);
+      color: white;
+      word-wrap: break-word;
+      word-break: break-all;
+      white-space: pre-line;
+      padding: 10px 20px;
+      /* width: 50%; */
+      /* padding: 5px 20px;  */
+      text-align: center;
+      font-size: 120%;
+      line-height: 30px;
+    }
+
+    .sidebar {
+      font-family: "Jua", sans-serif;
+      height: calc(100% - 80px);
+      width: 0;
+      position: fixed;
+      z-index: 3;
+      top: 0;
+      right: 0;
+      /* opacity: 0.9; */
+      overflow: hidden;
+    }
+
+    .sidewidth {
+      width: 300px;
+      background: rgb(14, 13, 13);
+      height: calc(100vh - 80px);
+      z-index: 3;
+    }
+    .sidemargin {
+      width: (100vw - 300px);
+    }
+    .sign-box {
+      width: 300px;
+      height: 200px;
+      background: rgb(255, 218, 246);
+      z-index: 4;
+      position: absolute;
+      right: 0;
+      bottom: 80px;
+      display: none;
+    }
+
+    .signVideoWidth {
+      display: block;
+    }
+
+    .btn-zip {
+      font-family: "Jua", sans-serif;
+      display: grid;
+      grid-template-columns: 1fr 1fr 1fr;
+      text-align: center;
+      justify-content: center;
+    }
+
+    .btn-zip > input[type="radio"] {
+      opacity: 0;
+      position: fixed;
+      width: 0;
+    }
+
+    .btn-zip label {
+      display: inline-block;
+      background-color: rgb(207, 196, 255);
+      padding: 10px;
+      font-family: "Jua", sans-serif;
+      font-family: "Noto Sans KR", sans-serif;
+      font-size: 16px;
+      /* border: 2px solid #444; */
+      border-radius: 15px 15px 0 0;
+    }
+    .btn-zip input[type="radio"]:checked + label {
+      background-image: linear-gradient(
+        to right top,
+        #7fa8f9,
+        #82a0fe,
+        #8a97ff,
+        #958cff,
+        #a380ff,
+        #a87dff,
+        #ad7bff,
+        #b278ff,
+        #ac80ff,
+        #a887ff,
+        #a38eff,
+        #a094ff
+      );
+    }
+
+    .btn-zip label:hover {
+      cursor: pointer;
+      background-color: rgb(211, 134, 255);
+    }
+
+    .btn-item {
+      display: flex;
+      align-items: center;
+      justify-content: center;
+    }
+    .chat-btn {
+      animation: move 1s;
+      margin-bottom: 0;
+    }
+    .parti-btn {
+      animation: move 1s;
+      margin-bottom: 0;
+    }
+    .record-btn {
+      animation: move 1s;
+      margin-bottom: 0;
+    }
+
+    .chosed-box {
+      width: 300px;
+      height: 100%;
+      background: #a28cff;
+    }
+    .plus-box {
+      width: 100%;
+      height: 160px;
+      background-image: linear-gradient(
+        to right top,
+        #b7b1fa,
+        #b4a6fd,
+        #b39bff,
+        #b38eff,
+        #b581ff,
+        #b47eff,
+        #b27bff,
+        #b178ff,
+        #ab80ff,
+        #a587ff,
+        #a08eff,
+        #9c94ff
+      );
+      z-index: 2;
+      /* position:absolute; */
+      margin-bottom: 80px;
+      left: 0;
+    }
+
+    .meeting-bottom {
+      width: 100%;
+      height: 120px;
+      /* padding:20px; */
+
+      position: fixed;
+      bottom: 0;
+      left: 0;
+      z-index: 4;
+      overflow: hidden;
+      display: flex;
+      justify-content: center;
+    }
+
+    .bottom-btn-box {
+      padding-top: 45px;
+      width: 50%;
+      height: 100%;
+      display: flex;
+      justify-content: space-around;
+      align-items: center;
+    }
+
+    .circle-btn {
+      position: relative;
+      /* display: block; */
+      align-items: center;
+      width: 100%;
+      /* height: 100%; */
+      margin: 15px;
+    }
+    .arrow_box {
+      z-index: 5;
+      text-align: center;
+      display: none;
+      position: absolute;
+      width: 120px;
+      padding: 8px;
+      top: -80%;
+      left: -25%;
+      -webkit-border-radius: 8px;
+      -moz-border-radius: 8px;
+      border-radius: 8px;
+      background: rgba(169, 94, 255, 0.925);
+      color: #fff;
+      font-size: 14px;
+      opacity: 0.8;
+    }
+
+    .arrow_box:after {
+      position: absolute;
+      top: 100%;
+      left: 50%;
+      width: 0;
+      height: 0;
+      margin-left: -10px;
+      border: solid transparent;
+      border-color: rgba(51, 51, 51, 0);
+      border-top-color: rgba(250, 195, 255, 0.685);
+      border-width: 10px;
+      pointer-events: none;
+      content: " ";
+    }
+
+    /* .circle-btn:hover > p.arrow_box {
+      display: block;
+    } */
+    .circle-btn:hover > p.arrow_box {
+      display: block;
+    }
+    .circle-btn:hover {
+      cursor: pointer;
+    }
+
+    .circle-btn i {
+      display: block;
+      color: white;
+      padding: 20px;
+      width: 62px;
+      height: 62px;
+      border-radius: 50%;
+      border: 2px solid rgba(255, 255, 255, 0.562);
+      justify-content: center;
+      align-items: center;
+      display: flex;
+    }
+
+    .hello {
+      display: grid;
+      grid-template-columns: auto auto auto;
+    }
+  </style>
+</html>

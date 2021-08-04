@@ -1,0 +1,55 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper
+        PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+        "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+
+<mapper namespace="com.dima.test.dao.FollowDao">
+    <!-- 팔로우 등록 -->
+    <insert id="insertFollow" parameterType="Follow">
+        insert into FOLLOW
+        values(#{userId}, #{followingId})
+   </insert>
+   
+   <!-- 팔로우 취소 -->
+	<delete id="deleteFollow" parameterType="Follow">
+		delete
+		from FOLLOW
+		where USER_ID = #{userId} 
+		and FOLLOWING_ID = #{followingId}
+	</delete>
+	
+	<!-- 나를 팔로우 한 사람 목록 -->
+	<select id="selectFollowById" parameterType="String" resultType="Hashmap">
+		select USER_ID
+		from 	FOLLOW
+		where FOLLOWING_ID = #{followingId}
+	</select>
+	
+	<!-- 내가 팔로우 한 사람 목록 -->
+	<select id="selectFollowingById" parameterType="String" resultType="Hashmap">
+		select FOLLOWING_ID
+		from 	FOLLOW
+		where USER_ID = #{userId}
+	</select>
+	
+	<!-- 나를 팔로우 한 사람 숫자 -->
+	<select id="selectFollowCountById" parameterType="String" resultType="Integer">
+		select count(USER_ID)
+		from 	FOLLOW
+		where FOLLOWING_ID = #{followingId}
+	</select>
+	
+	<!-- 내가 팔로우 한 사람 숫자 -->
+	<select id="selectFollowingCountById" parameterType="String" resultType="Integer">
+		select count(USER_ID)
+		from 	FOLLOW
+		where USER_ID = #{userId}
+	</select>
+	
+	<!-- 팔로우 했는지 안했는지 -->
+	<select id="IsFollow" parameterType="Follow" resultType="Integer">
+		select count(USER_ID)
+		from FOLLOW
+		where USER_ID = #{userId} and FOLLOWING_ID = #{followingId}
+	</select>
+</mapper>

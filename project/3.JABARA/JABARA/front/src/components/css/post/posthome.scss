@@ -1,0 +1,125 @@
+// Learn more about this:
+// @link https://dev.to/5t3ph/commitsweeper-pure-css-game-4f8a
+// Looking to upgrade your CSS skills?
+// @link https://moderncss.dev
+
+$colors: (
+  less: #ebedf0,
+  low: #c6e48b,
+  mid: #7bc96f,
+  high: #239a3b,
+  most: #196127,
+);
+
+@function getColor($key) {
+  @return map-get($colors, $key);
+}
+
+* {
+  box-sizing: border-box;
+}
+
+body {
+  background-color: white;
+  min-height: 100vh;
+  display: grid;
+  grid-gap: 1rem;
+  place-content: center;
+  text-align: center;
+  font-family: Karla, sans-serif;
+}
+
+h1 {
+  $h1: 4.2rem;
+  // font-size: $h1;
+  font-size: unquote("min(max(2.5rem, 5vw), #{$h1})");
+  color: getColor(mid);
+}
+
+h1,
+p {
+  margin: 0;
+}
+
+p {
+  font-size: 1.125rem;
+
+  &.warning {
+    color: getColor(most);
+    font-style: italic;
+    margin-bottom: 1rem;
+  }
+}
+
+div {
+  grid-gap: 2px;
+  width: 100vw;
+  display: grid;
+  grid-template-columns: repeat(51, 1fr);
+  grid-template-rows: repeat(7, 1fr);
+  grid-auto-flow: column;
+}
+
+label input {
+  opacity: 0;
+}
+
+$boxSize: calc((100vw - 130px) / 52);
+$numColors: length($colors);
+$colorWidth: 100 / $numColors;
+
+label {
+  position: relative;
+  display: grid;
+  grid-template-areas: "box";
+  width: $boxSize;
+  height: $boxSize;
+  background-color: getColor(less);
+  overflow: hidden;
+
+  .box,
+  input,
+  .box::after {
+    grid-area: box;
+  }
+
+  .box {
+    animation: cycle #{$numColors * 400}ms ease 0s infinite normal;
+    animation-play-state: paused;
+    position: relative;
+  }
+
+  // cycle on hover
+  &:hover .box {
+    animation-play-state: running;
+  }
+
+  // pause animation when checked
+  input:checked + .box {
+    animation-play-state: paused;
+  }
+
+  // Random "mines" reset the animation on all inputs that follow
+  @for $i from 1 through 25 {
+    $r: random(365);
+    &:nth-of-type(#{$r}) input:checked + .box::after {
+      content: "💣";
+      font-size: $boxSize;
+    }
+
+    &:nth-of-type(#{$r}):focus-within ~ label .box {
+      animation: unset;
+    }
+  }
+}
+
+// @keyframes cycle {
+//   @each $name, $color in $colors {
+//     $i: index(($colors), ($name $color)) - 1;
+//     $frame: $i * $colorWidth;
+
+//     #{$frame}% {
+//       background-color: $color;
+//     }
+//   }
+// }

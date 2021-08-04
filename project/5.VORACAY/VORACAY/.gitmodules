@@ -1,0 +1,9 @@
+[submodule "RTCMultiConnection"]
+	path = RTCMultiConnection
+	url = https://github.com/JeongYeonUk/RTCMultiConnection.git
+[submodule "RTCMultiConnection-Server"]
+	path = RTCMultiConnection-Server
+	url = https://github.com/JeongYeonUk/RTCMultiConnection-Server.git
+[submodule "nnstreamer-example"]
+	path = nnstreamer-example
+	url = https://github.com/Joojihwan/nnstreamer-example.git

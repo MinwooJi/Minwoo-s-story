@@ -1,0 +1,107 @@
+﻿<!-- menu main !!!!!!!ㄴ -->
+<!DOCTYPE html>
+<html lang="ko">
+  <head>
+    <meta charset="utf-8" />
+    <!-- <meta name="viewport" content="width=device-width" /> -->
+    <!-- 웹 페이지의 크기가 모니터가 스마트폰의 실제 액정 크기를 따라가도록. -->
+    <meta
+      name="viewport"
+      content="width=device-width, initial-scale=1, shrink-to-fit=no"
+    />
+    <title>login create join</title>
+
+    <style scoped>
+      .profile img {
+        border-radius: 50%;
+      }
+      .meeting-main {
+        background-image: linear-gradient(
+          to left bottom,
+          #c8f7f4,
+          #c4f9f1,
+          #c2fbed,
+          #c2fde7,
+          #c3fee0,
+          #c3fee0,
+          #c4ffe0,
+          #c4ffe0,
+          #c3ffe7,
+          #c3ffee,
+          #c5fff4,
+          #c8fff9
+        );
+        width: 100vw;
+        height: 100vh;
+        position: fixed;
+        margin: 0;
+        top: 0;
+        left: 0;
+        right: 0;
+        bottom: 0;
+        z-index: 1;
+        font-family: "Viga", sans-serif;
+        color: rgb(255, 255, 255);
+        font-size: 20px;
+      }
+      .main-box {
+        width: 100vh;
+        position: absolute;
+        top: 47%;
+        left: 50%;
+        transform: translate(-50%, -50%);
+      }
+      .meeting-button {
+        display: flex;
+        flex-direction: column;
+        justify-content: center;
+        align-items: center;
+      }
+      button {
+        font-weight: bolder;
+        width: 100%;
+        margin-bottom: 20px;
+        padding: 50px 200px;
+        border-radius: 5px;
+        /* height: 40px; */
+        transition: all ease 0.5s;
+        border: 1px solid rgba(255, 255, 255, 0.932);
+        background-color: rgba(143, 255, 208, 0.233);
+        font-family: "Viga", sans-serif;
+        color: white;
+        font-size: 20px;
+      }
+      button:hover {
+        cursor: pointer;
+        transform: scale(1.1);
+        font-weight: bolder;
+        background-color: #ffffff91;
+        color: rgba(80, 255, 153, 0.76);
+      }
+      button:focus {
+        outline: none !important;
+        border: 0;
+        border: 2px solid rgba(187, 255, 190, 0.616);
+        box-shadow: 0 0 20px rgba(121, 245, 169, 0.616);
+      }
+    </style>
+  </head>
+  <body>
+    <div class="meeting-main">
+      <div class="main-box">
+        <!-- <div class="header-choose">
+          <a href="/mypage">My Page</a>
+          <a href="/meeting/setting">Setting</a>
+        </div> -->
+        <!-- <div class="profile">
+          <img src="https://www.thestatesman.com/wp-content/uploads/2017/08/1493458748-beauty-face-517.jpg" alt="" width="150" height="150">
+        </div> -->
+        <div class="meeting-button">
+          <a href="/demos/voda/create.html"><button>미팅시작</button></a>
+          <a href="/demos/createroom/"><button>미팅참여</button></a>
+          <!-- <a href="/reservate"><button>예약하기</button></a> -->
+        </div>
+      </div>
+    </div>
+  </body>
+</html>

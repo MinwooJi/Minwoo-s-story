@@ -1,0 +1,53 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper
+        PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+        "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.dima.test.dao.ImageUserDao">
+	<update id="updateUserImage" parameterType="UserImage">
+		update USERIMAGE 
+		set USERMAGE_ORINAME=#{usermageOriname}, 
+		USERIMAGE_NAME=#{userimageName}, 
+		USERIMAGE_PATH=#{userimagePath} 
+		where USER_ID=#{userId} 
+	</update>
+	<select id="selectImagePath" parameterType="String" resultType="String">
+		select USERIMAGE_PATH 
+		from USERIMAGE 
+		where USER_ID=#{userId} 
+	</select>
+	<select id="selectImageName" parameterType="String" resultType="String">
+		select USERIMAGE_NAME 
+		from USERIMAGE 
+		where USER_ID=#{userId} 
+	</select>
+
+<!--  //////////////////////////////////////////AWS -->
+	<insert id="insertAWSUserImage" parameterType="UserImage">
+		insert into USERIMAGE(
+				USER_ID,
+				USERIMAGE_PATH
+				)
+		values(
+				#{userId},
+				#{userimagePath}
+				)
+	</insert>
+	
+	<select id="selectAWSUserImage" parameterType="String" resultType="String">
+		select USERIMAGE_PATH
+		from USERIMAGE
+		where USER_ID = #{userId}
+	</select>
+	
+	<update id="updateAWSUserImage" parameterType="UserImage">
+		update USERIMAGE
+		set USERIMAGE_PATH = #{userimagePath}
+		where USER_ID = #{userId}
+	</update>
+	
+	<delete id="deleteAWSUserImage" parameterType="String">
+		delete 
+		from USERIMAGE
+		where USER_ID = #{userId}
+	</delete>
+</mapper>

@@ -1,0 +1,305 @@
+import socket
+
+import threading
+
+import sys
+
+import math
+
+import time
+
+import RPi.GPIO as GPIO
+
+from mpu6050 import mpu6050
+
+from hx711 import HX711
+
+HOST = ''                
+
+PORT = 5000
+
+s = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
+
+s.bind((HOST, PORT))
+
+s.listen(1)
+
+conn, addr = s.accept()
+
+print('Connected by', addr)
+
+ 
+
+def cleanAndExit():
+
+    print ("Cleaning...")
+
+ 
+
+    if not EMULATE_HX711:
+
+        GPIO.cleanup()
+
+        
+
+    print ("Bye!")
+
+    sys.exit()	
+
+hx = HX711(5, 6)
+
+hx2 = HX711(13, 19)
+
+ 
+
+hx.set_reading_format("MSB", "MSB")
+
+hx.set_reference_unit(434)
+
+hx.reset()
+
+hx.tare()
+
+ 
+
+hx2.set_reading_format("MSB", "MSB")
+
+hx2.set_reference_unit(434)
+
+hx2.reset()
+
+hx2.tare()
+
+sndata = "-1"
+
+flag = 0 #When recive data -> flag = 1
+
+def sendingMsg():
+
+	global sndata
+
+	global flag
+
+	presndata = -2
+
+	#macstr = "3C:A1:0D;10:FB:AD:"
+
+	while True:
+
+		if sndata == '-1':
+
+			pass
+
+		else:
+
+			if flag == 1 :
+
+				sndata = sndata.encode('utf-8') ## STRING
+
+				#data = conn.recv(1024)
+
+				#sndata = bytes(sndata,"utf-8")
+
+				#data = data + sndata.encode('utf-8')
+
+				conn.send(sndata)
+
+				print (">>  Send to APP (",sndata,") from Raspberry PI")
+
+				flag = 0
+
+			else :
+
+				pass
+
+	conn.close()
+
+	
+
+def gettingMsg():
+
+	global sndata
+
+	global flag
+
+	while True:
+
+		data = conn.recv(1024)
+
+		data = data.decode('utf-8') 
+
+		if not data: 
+
+			break
+
+		else:
+
+			print ("<<  Recieve From APP Value")
+
+			flag = 1
+
+			if len(data) < 22 :
+
+				print "Exeption0 : revive data was broken !!"
+
+				pass
+
+			elif len(data) > 41 :
+
+				print "Exeption1 : revive data was broken !!"
+
+				pass
+
+			elif len(data) > 22 and len(data) <= 41  :
+
+				data = data[40]  # first Time need acception!!!!!!!!!! ##############
+
+			else :
+
+				data = data[21]
+
+			print (data)
+
+			if data=='1'or data=='3':
+
+				while True :
+
+					mpu = mpu6050(0x68)
+
+					accel_data = mpu.get_accel_data()
+
+					valx = math.degrees(math.atan(accel_data['x']/(math.sqrt(pow(accel_data['y'],2)+pow(accel_data['z'],2)))))
+
+					valy = math.degrees(math.atan(accel_data['y']/(math.sqrt(pow(accel_data['x'],2)+pow(accel_data['z'],2)))))
+
+					if valx>=-10 and valx<=10 and valy>=-10 and valy<=10:
+
+						if data == '1':
+
+							startTimeM = max(0,int(hx.get_weight(5))) 
+
+						elif data == '3':
+
+							FinishTimeM = max(0,int(hx.get_weight(5)))
+
+							#rst = FinishTimeM - startTimeM   #############
+
+							rst = FinishTimeM - 0
+
+							###############################################
+
+							if rst > 500 :
+
+								sndata = "1" # added
+
+								print ("Added")
+
+ 
+
+							elif rst < -500 :
+
+								sndata = "2" # subed
+
+								print ("Subed")
+
+ 
+
+							else :
+
+								sndata = "0" # No problem
+
+								print ("No matter")
+
+							print (rst)
+
+						break
+
+					elif valx>=80 and valx<=90 and valy>=-10 and valy<=10:
+
+						if data == '1':
+
+							startTimeM = max(0,int(hx2.get_weight(5))) 
+
+						elif data == '3':
+
+							FinishTimeM = max(0,int(hx2.get_weight(5)))
+
+							#rst = FinishTimeM - startTimeM   #############
+
+							rst = FinishTimeM - 0
+
+							###############################################
+
+							if rst > 500 :
+
+								sndata = "1" # added
+
+								print ("Added")
+
+ 
+
+							elif rst < -500 :
+
+								sndata = "2" # subed
+
+								print ("Subed")
+
+ 
+
+							else :
+
+								sndata = "0" # No problem
+
+								print ("No matter")
+
+							print rst
+
+						break
+
+					else :
+
+						print("\n<Angle>")
+
+						print("=============")
+
+						print("x angle")
+
+						print valx,"'"
+
+						print("y angle")
+
+						print valy,"'"
+
+						print("=============")
+
+						print("\n")
+
+					
+
+			else :
+
+				print "Waiting..."
+
+			#break
+
+ 
+
+			
+
+				
+
+	conn.close()
+
+ 
+
+ 
+
+threading._start_new_thread(sendingMsg,())
+
+threading._start_new_thread(gettingMsg,())
+
+ 
+
+while True:
+
+	pass

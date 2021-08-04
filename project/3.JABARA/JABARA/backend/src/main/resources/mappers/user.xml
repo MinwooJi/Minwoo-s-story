@@ -1,0 +1,128 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper
+        PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+        "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+
+<mapper namespace="com.dima.test.dao.UserDao">
+    <!-- 사용자 등록 -->
+    <insert id="insertUser" parameterType="User">
+        insert into USER(
+        USER_ID,
+        USER_PW,
+        USER_NAME,
+        USER_NICKNAME,
+        USER_EMAIL,
+        USER_GITURL
+        ) values (
+        #{userId},
+        #{userPw},
+        #{userName},
+        #{userNickname},
+        #{userEmail},
+        #{userGiturl}
+        )
+    </insert>
+    <select id="selectEmail" parameterType="String"
+        resultType="String">
+        select USER_EMAIL from USER where USER_ID=#{userId}
+    </select>
+
+    <select id="useridcount" parameterType="String"
+        resultType="Integer">
+        select count(*) from USER where USER_ID=#{userId}
+    </select>
+
+
+    <select id="userpwdById" parameterType="String"
+        resultType="String">
+        select USER_PW from USER where USER_ID=#{userId}
+    </select>
+
+    <select id="loginUser" parameterType="User" resultType="hashmap">
+        select * from USER where USER_ID= #{userId}
+    </select>
+    <update id="changePasswordByEmail" parameterType="User">
+        update USER
+        set USER_PW=#{userPw} 
+        where USER_ID=#{userId}
+    </update>
+    <update id="updateUser" parameterType="User">
+        update USER
+        set USER_PW=#{userPw}, 
+        USER_NAME=#{userName}, 
+        USER_NICKNAME=#{userNickname}, 
+        USER_EMAIL=#{userEmail}, 
+        USER_GITURL=#{userGiturl}
+        where USER_ID=#{userId} 
+    </update>
+    <select id="Totalcount" resultType="Integer">
+        select count(*) 
+        from USER 
+    </select>
+    
+
+    <select id="selectPostAndImage" parameterType="User" resultType="hashmap">
+        select P.POST_NUMBER, count(PC.COMMENT_NUMBER), P.POST_LIKE , P.POST_TITLE , P.POST_CODE_CONTENT , P.POST_SNS_CONTENT 
+        from POST P , POST_COMMENT PC 
+        where P.POST_NUMBER = PC.POST_NUMBER and P.USER_ID = #{userId} 
+        group by P.POST_NUMBER 
+    </select>
+    
+
+
+    <select id="selectFirstImage" parameterType="User" resultType="hashmap">
+        select I.IMAGE_NUMBER, I.IMAGE_PATH, I.POST_NUMBER
+        from IMAGE I, POST P
+        where I.POST_NUMBER = P.POST_NUMBER and P.USER_ID = #{userId}  and I.IMAGE_NUMBER =1;
+    </select>
+    
+    <delete id="deleteUser" parameterType="User">
+        delete from USER where USER_ID=#{userId} 
+    </delete>
+    <select id="selectNickName" parameterType="String">
+        select count(*) from USER where USER_PW={userPw} 
+    </select>
+    <select id="selectIdByNickname" parameterType="String" resultType="hashmap">
+        select USER_ID from USER where USER_NICKNAME=#{userNickname}
+    </select>
+    <select id="selectRankingtodayMe" parameterType="String" resultType="String">
+        select A.ranking 
+            from 
+            (select  U.USER_ID, row_number() over(order by count(P.USER_ID ) desc) as ranking
+             from POST P , USER U 
+             where P.USER_ID = U.USER_ID  and P.POST_CATEGORY ='algo'  and P.POST_DATE BETWEEN DATE_ADD(now(),interval -1 day) and now()
+             group by U.USER_ID) A
+             where A.USER_ID=#{userId}
+    </select>
+    <select id="selectRankingTotalMe" parameterType="String" resultType="String">
+        select A.ranking 
+            from 
+            (select  U.USER_ID, row_number() over(order by count(P.USER_ID ) desc) as ranking
+             from POST P , USER U 
+             where P.USER_ID = U.USER_ID  and P.POST_CATEGORY ='algo' 
+             group by U.USER_ID) A
+             where A.USER_ID=#{userId}
+    </select>
+    
+
+    <select id="userDetailById" parameterType="String" resultType="hashmap">
+        select *
+        from USER
+        where USER_ID = #{userId}
+    </select>
+    
+        <select id="userDetailByNickname" parameterType="String" resultType="hashmap">
+        select *
+        from USER
+        where USER_NICKNAME = #{userNickname}
+    </select>
+    
+    <!-- 사용자 수정 <update id="updateUser" parameterType="User"> update User set 
+        qna_title = #{qnaTitle}, qna_content = #{qnaContent}, qna_userid = #{qnaUserid} 
+        where qna_no = #{qnaNo} </update> 게시글 삭제 <delete id="deleteQnA" parameterType="int"> 
+        delete from qna_board where qna_no = #{qnaNo} </delete> 응답 글 등록 <update id="insertReply" 
+        parameterType="qna"> update qna_board set reply_content = #{replyContent}, 
+        reply_userid = #{replyUserid}, reply_datetime = #{replyDatetime} where qna_no 
+        = #{qnaNo} </update> -->
+
+</mapper>

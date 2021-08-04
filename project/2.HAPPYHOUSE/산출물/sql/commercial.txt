@@ -1,0 +1,16 @@
+CREATE TABLE `commercial` (
+  `no` int DEFAULT NULL,
+  `shopname` text,
+  `code1` text,
+  `codename1` text,
+  `code2` text,
+  `codename2` text,
+  `code3` text,
+  `codename3` text,
+  `city` text,
+  `gu` text,
+  `dong` text,
+  `address` text,
+  `lng` text,
+  `lat` text
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_0900_ai_ci

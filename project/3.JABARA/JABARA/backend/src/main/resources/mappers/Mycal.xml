@@ -1,0 +1,59 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper
+        PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+        "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.dima.test.dao.MycalDao">
+
+<!-- 내 달력 전체 조회 -->
+<select id="selectMycal" parameterType="String" resultType="hashmap">
+	select *
+	from MY_CAL 
+	where USER_ID = #{userId}
+</select>
+
+<!-- 내 달력에 추가  -->
+<insert id="insertMycal" parameterType="Mycal">
+	insert into MY_CAL(
+						USER_ID,
+						CAL_NUMBER,
+						START_DATE,
+						END_DATE,
+						CAL_TITLE,
+						CAL_CONTENT
+						)
+				values(
+						#{userId},
+						#{calNumber},
+						#{startDate},
+						#{endDate},
+						#{calTitle},
+						#{calContent}
+						)
+</insert>
+<!-- 내 달력 수정  -->
+
+<update id="updateMycal" parameterType="Mycal">
+	update MY_CAL
+	set START_DATE = #{startDate},
+		END_DATE = #{endDate},
+		CAL_TITLE = #{calTitle},
+		CAL_CONTENT = #{calContent}
+	where CAL_NUMBER = #{calNumber} and USER_ID = #{userId}
+</update>
+
+<!-- 내 달력에 삭제  -->
+<delete id="deleteMycal" parameterType="Mycal">
+	delete 
+	from MY_CAL
+	where CAL_NUMBER = #{calNumber} and USER_ID = #{userId}
+</delete>
+
+<!-- MYCAL에 들어온 데이터가 중복인지 확인하기 (HireNumber로) -->
+<select id="selectHireNumber" parameterType="Hire" resultType="Integer">
+	select COUNT( HIRE_NUMBER)
+	from MY_CAL
+	where HIRE_NUMBER = #{hireNumber} and USER_ID = #{userId}
+</select>
+
+
+</mapper>

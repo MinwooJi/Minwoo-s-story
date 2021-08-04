@@ -1,0 +1,433 @@
+package com.example.cms.mychatting1;
+
+import android.annotation.SuppressLint;
+import android.support.v7.app.AppCompatActivity;
+import android.os.Bundle;
+import android.content.Context;
+import android.net.wifi.WifiInfo;
+import android.net.wifi.WifiManager;
+import android.os.Handler;
+import android.os.Message;
+import android.view.View;
+import android.widget.Button;
+import android.widget.EditText;
+import android.widget.TextView;
+import android.widget.Toast;
+
+import java.io.BufferedReader;
+import java.io.DataInputStream;
+import java.io.DataOutputStream;
+import java.io.OutputStream;
+import java.net.Socket;
+import java.text.SimpleDateFormat;
+import java.util.ArrayList;
+import java.util.Calendar;
+import java.util.Date;
+
+public class Chat1 extends AppCompatActivity {
+TextView txtMessage;
+Button btnConnect, btnSend;
+EditText editIp, editPort, editMessage;
+Handler msgHandler;
+SocketClient client;
+ReceiveThread receive;
+SendThread send;
+Socket socket;
+Context context;
+String mac;
+int check=0;
+
+
+int day=0;
+long now;
+String strCurHour="";
+String strCurMinute="";
+String strCurSecond="";
+int iCurHour=0;
+int iCurMinute=0;
+int iCurSecond=0;
+
+private ArrayList<String> monStart =null;
+private ArrayList<String> monEnd =null;
+private ArrayList<String> tueStart =null;
+private ArrayList<String> tueEnd =null;
+private ArrayList<String> wenStart =null;
+private ArrayList<String> wenEnd =null;
+private ArrayList<String> thurStart =null;
+private ArrayList<String> thurEnd =null;
+private ArrayList<String> friStart =null;
+private ArrayList<String> friEnd =null;
+
+@SuppressLint("HandlerLeak")
+@Override
+protected void onCreate(Bundle savedInstanceState) {
+super.onCreate(savedInstanceState);
+setContentView(R.layout.activity_chat1);
+
+context = this;
+editIp = (EditText) findViewById(R.id.editIp);
+editPort = (EditText) findViewById(R.id.editPort);
+editMessage = (EditText) findViewById(R.id.editMessage);
+btnConnect = (Button) findViewById(R.id.btnConnect);
+btnSend = (Button) findViewById(R.id.btnSend);
+txtMessage = (TextView) findViewById(R.id.txtMessage);
+//threadList = new LinkedList<Chat1.SocketClient>();
+
+
+msgHandler = new Handler() { //핸들러 작성
+//백그라운드 스레드에서 받은 메세지를 처리, 화면을 고치는일
+@Override
+public void handleMessage(Message msg) {
+if (msg.what == 1111) {
+//채팅서버로부터 수신한 메시지를 텍스트뷰에 추가
+txtMessage.append(msg.obj.toString() + "\n");//문자열 추가하기
+}
+}
+};
+client = new SocketClient("192.168.0.2", "5000"); //IP와 PORT넘버
+if(client!=null){
+client.start();
+
+Toast.makeText(getApplicationContext(), "서버와 연결이 되었어~", Toast.LENGTH_LONG).show();
+
+}
+
+
+//서버에 접속 버튼// 여기서 서버접속 IP주소랑 포트를 받아와서 접속하는게 아니라 고정해놓으면됨
+/* btnConnect.setOnClickListener(new View.OnClickListener() {
+@Override
+public void onClick(View v) {
+client = new SocketClient(editIp.getText().toString()
+, editPort.getText().toString()); //IP와 PORT넘버
+client.start();
+}
+});*/
+//while ()
+//send = new SendThread(socket);
+//send.start();
+
+//메시지 전송 버튼
+btnSend.setOnClickListener(new View.OnClickListener() {
+@Override
+public void onClick(View v) {
+
+//String message = mon.get(i);
+// if(message =="1"&&message != null && !message.equals("")){
+send = new SendThread(socket);
+send.start();
+
+// }
+/* String message = editMessage.getText().toString(); //edit창에 입력한거 message로 가져오기
+if (message != null && !message.equals("")) {
+send = new SendThread(socket);
+send.start();
+editMessage.setText(""); //다시 텍스트 빈걸로 만들기
+}*/
+}
+});
+
+monStart=new ArrayList<String>();
+monStart.add("1"); //수업 있음
+monStart.add("1");
+monStart.add("0");
+monStart.add("1");
+monStart.add("0");
+monStart.add("1");
+
+monEnd=new ArrayList<String>();
+monEnd.add("3");
+monEnd.add("3"); //종료 있다
+monEnd.add("2"); //종료 없다
+monEnd.add("3");
+monEnd.add("2");
+monEnd.add("3");
+
+
+tueStart=new ArrayList<String>();
+tueStart.add("0");
+tueStart.add("1");
+tueStart.add("0");
+tueStart.add("1");
+tueStart.add("0");
+tueStart.add("0");
+
+tueEnd=new ArrayList<String>();
+tueEnd.add("2");
+tueEnd.add("3");
+tueEnd.add("2");
+tueEnd.add("3");
+tueEnd.add("2");
+tueEnd.add("2");
+
+wenStart =new ArrayList<String>();
+wenStart.add("0");
+wenStart.add("0");
+wenStart.add("1");
+wenStart.add("1");
+wenStart.add("0");
+wenStart.add("0");
+
+wenEnd =new ArrayList<String>();
+wenEnd.add("2");
+wenEnd.add("2");
+wenEnd.add("3");
+wenEnd.add("3");
+wenEnd.add("2");
+wenEnd.add("2");
+
+thurStart=new ArrayList<String>();
+thurStart.add("0");
+thurStart.add("1");
+thurStart.add("0");
+thurStart.add("0");
+thurStart.add("1");
+thurStart.add("0");
+
+thurEnd=new ArrayList<String>();
+thurEnd.add("2");
+thurEnd.add("3");
+thurEnd.add("2");
+thurEnd.add("2");
+thurEnd.add("3");
+thurEnd.add("2");
+
+friStart =new ArrayList<String>();
+friStart.add("1");
+friStart.add("0");
+friStart.add("1");
+friStart.add("0");
+friStart.add("0");
+friStart.add("0");
+
+friEnd =new ArrayList<String>();
+friEnd.add("3");
+friEnd.add("2");
+friEnd.add("3");
+friEnd.add("2");
+friEnd.add("2");
+friEnd.add("2");
+
+//array 바꾸고 싶다면 이름.set(몇번째,"멀로");
+Calendar calendar = Calendar.getInstance();
+day = calendar.get(Calendar.DAY_OF_WEEK); //요일 알아오기
+
+}
+
+
+//내부 클래스
+class SocketClient extends Thread {
+boolean threadAlive; //스레드의 동작 여부
+String ip;
+String port;
+
+OutputStream outputStream = null;
+BufferedReader br = null;
+DataOutputStream output = null;
+
+public SocketClient(String ip, String port) {
+threadAlive = true;
+this.ip = ip;
+this.port = port;
+}
+
+public void run() {
+try {
+// 채팅서버에 접속
+socket = new Socket(ip, Integer.parseInt(port));
+//서버에 메시지를 전달하기 위한 스트림 생성
+output = new DataOutputStream(socket.getOutputStream());
+//메시지 수신용 스레드 생성
+receive = new ReceiveThread(socket);
+receive.start();
+//와이파이 정보 관리자 객체로부터 폰의 mac address를 가져와서 채팅서버에 전달
+WifiManager mng = (WifiManager)context.getSystemService(WIFI_SERVICE);
+WifiInfo info = mng.getConnectionInfo();
+
+mac = info.getMacAddress();
+//mac = "Client ";
+output.writeUTF(mac); //서버에 전달
+} catch (Exception e) {
+e.printStackTrace();
+}
+}
+}// end of SocketClient
+
+//내부 클래스
+class ReceiveThread extends Thread {
+Socket socket = null;
+DataInputStream input = null;
+
+public ReceiveThread(Socket socket) {
+this.socket = socket;
+try {
+//채팅서버로부터 메시지를 받기 위한 스트림 생성
+input = new DataInputStream(socket.getInputStream());
+} catch (Exception e) {
+e.printStackTrace();
+}
+}
+
+public void run() {
+try {
+while (input != null) {
+//채팅 서버로부터 받은 메시지
+String msg = input.readUTF(); //받은 메세지를
+if (msg != null) {
+//핸들러에게 전달할 메시지 객체
+Message hdmsg = msgHandler.obtainMessage();
+hdmsg.what = 1111; //메시지 식별자
+hdmsg.obj = msg; //메시지 본문
+//핸들러에게 메시지 전달(화면변경)
+msgHandler.sendMessage(hdmsg);
+}
+}
+} catch (Exception e) {
+e.printStackTrace();
+}
+}
+}//end of ReceiveTHread
+//내부클래스
+class SendThread extends Thread{
+Socket socket;
+String sendmsg ; //서버로 보낼 string!!! 추가된거
+
+DataOutputStream output;
+public SendThread(Socket socket){
+this.socket = socket;
+try{
+//채팅서버로 메시지를 보내기 위한 스트림 생성
+output = new DataOutputStream(socket.getOutputStream()); //getOutputStream()은 쓰기
+}catch (Exception e){
+e.printStackTrace();
+}
+}
+public void run(){
+try{
+now=System.currentTimeMillis();
+Date date =new Date(now);
+
+SimpleDateFormat CurHourFormat =new SimpleDateFormat("HH"); //시간
+SimpleDateFormat CurMinuteFormat =new SimpleDateFormat("mm");//분
+SimpleDateFormat CurSecondFormat =new SimpleDateFormat("ss");//분
+
+strCurHour = CurHourFormat.format(date);
+strCurMinute = CurMinuteFormat.format(date);
+strCurSecond = CurSecondFormat.format(date);
+
+iCurHour= Integer.parseInt(strCurHour);
+iCurMinute =Integer.parseInt(strCurMinute);
+iCurSecond = Integer.parseInt(strCurSecond);
+
+
+if(day==2){ //월요일이면서
+//sendmsg = strCurHour+" "+strCurMinute; //서버로 보낼 string!!! 추가된거
+if(iCurMinute==9&&iCurSecond==0){ //9시면 iCurHour==9&&iCurMinute==0
+sendmsg = monStart.get(0);
+}
+else if(iCurMinute==9&&iCurSecond==50){ //9시50분애 수업끝
+sendmsg = monEnd.get(0);
+}
+else if(iCurMinute==10&&iCurSecond==0){
+sendmsg = monStart.get(1);
+}
+else if(iCurMinute==10&&iCurSecond==50){
+sendmsg = monEnd.get(1);
+}
+else if(iCurMinute==11&&iCurSecond==0){
+sendmsg = monStart.get(2);
+}
+else if(iCurMinute==11&&iCurSecond==50){
+sendmsg = monEnd.get(2);
+}
+else if(iCurMinute==12&&iCurSecond==0){
+sendmsg = monStart.get(3);
+}
+else if(iCurMinute==12&&iCurSecond==50){
+sendmsg = monEnd.get(3);
+}
+else if(iCurMinute==13&&iCurSecond==0){
+sendmsg = monStart.get(4);
+}
+else if(iCurMinute==13&&iCurSecond==50){
+sendmsg = monEnd.get(4);
+}
+else if(iCurMinute==14&&iCurSecond==0){
+sendmsg = monStart.get(5);
+}
+else if(iCurMinute==14&&iCurSecond==50){
+sendmsg = monEnd.get(5);
+}
+
+}
+else if(day==3){ //화요일이면서
+//sendmsg = strCurHour+" "+strCurMinute; //서버로 보낼 string!!! 추가된거
+/*if(iCurMinute==9&&iCurSecond==0){ //9시면 iCurHour==9&&iCurMinute==0
+sendmsg = tueStart.get(0);
+}
+else if(iCurMinute==9&&iCurSecond==50){ //9시50분애 수업끝
+sendmsg = tueEnd.get(0);
+}
+else if(iCurMinute==10&&iCurSecond==0){
+sendmsg = tueStart.get(1);
+}
+else if(iCurMinute==10&&iCurSecond==50){
+sendmsg = tueEnd.get(1);
+}
+else if(iCurMinute==11&&iCurSecond==0){
+sendmsg = tueStart.get(2);
+}
+else if(iCurMinute==11&&iCurSecond==50){
+sendmsg = tueEnd.get(2);
+}
+else if(iCurMinute==12&&iCurSecond==0){
+sendmsg = tueStart.get(3);
+}
+else if(iCurMinute==12&&iCurSecond==50){
+sendmsg = tueEnd.get(3);
+}
+else if(iCurMinute==13&&iCurSecond==0){
+sendmsg = tueStart.get(4);
+}
+else if(iCurMinute==13&&iCurSecond==50){
+sendmsg = tueEnd.get(4);
+}
+else if(iCurMinute==14&&iCurSecond==0){
+sendmsg = tueStart.get(5);
+}
+else if(iCurMinute==14&&iCurSecond==50){
+sendmsg = tueEnd.get(5);
+}*/
+sendmsg ="33";
+
+}
+else if(day==4){ //수요일이면서
+sendmsg ="33";
+}
+/* else if(day==5){ //목요일이면서
+if(15<=iCurHour&&iCurHour<16){
+sendmsg = thur.get(1);
+}
+}
+else if(day==6){ //금요일이면서
+if(0<=iCurHour&&iCurHour<1){
+sendmsg = fri.get(1);
+}
+}*/
+
+
+
+// String sendmsg = mon.get(0); //서버로 보낼 string!!! 추가된거
+if(output !=null){ //입력이 있으면
+if(sendmsg != null){ //edit창에 메세지가 있으면
+//채팅서버에 메시지 전달
+output.writeUTF(mac+":"+sendmsg); //UTF-8로 인코딩 후(string보낼때라 생각하면 됨) 출력
+
+}
+}
+}catch(Exception e){
+e.printStackTrace();
+}
+}
+}
+
+}

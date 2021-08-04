@@ -1,0 +1,36 @@
+import java.util.Scanner;
+
+public class Encode {
+
+	public static void main(String[] args) {
+		// TODO Auto-generated method stub
+		Scanner sc = new Scanner(System.in);
+		String s = sc.next();
+		int l = s.length();
+		int maxN=0;
+		if(l==1) {
+			System.out.println(s);
+			return;
+		}
+		for(int i=1;i<l;i++) {
+			if(l%i == 0) {
+				if(i<=(l/i)) {
+					maxN = Math.max(i, maxN);
+				}
+			}
+		}
+		int cnt = 0;
+		char[][] arr = new char[maxN][l/maxN];
+		for(int j=0;j<(l/maxN);j++) {
+			for(int i=0;i<maxN;i++) {
+				arr[i][j] = s.charAt(cnt++);
+			}
+		}
+		for(int i=0;i<maxN;i++) {
+			for(int j=0;j<(l/maxN);j++) {
+				System.out.print(arr[i][j]);
+			}
+		}
+	}
+
+}

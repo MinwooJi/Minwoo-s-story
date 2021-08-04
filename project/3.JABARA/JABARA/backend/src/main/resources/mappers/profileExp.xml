@@ -1,0 +1,156 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper
+        PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+        "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.dima.test.dao.ProfileExpDao">
+
+	<insert id="insertExp" parameterType="Exp">
+		insert into EXP(
+		EXP_NUMBER,
+		EXP_DATE,
+		EXP_WORKING,
+		EXP_SUBJECT,
+		EXP_ROLE,
+		EXP_CONTENT,
+		EXP_SOLVE,
+		EXP_LEARN,
+		EXP_ETC,
+		EXP_HARD,
+		USER_ID 
+		) values ( 
+		#{expNumber},
+		#{expDate},
+		#{expWorking},
+		#{expSubject},
+		#{expRole},
+		#{expContent},
+		#{expSolve},
+		#{expLearn},
+		#{expEtc},
+		#{expHard},
+		#{userId} 
+		)
+	</insert>
+	<insert id="insertLicense" parameterType="License">
+		insert into LICENSE(
+		LICENSE_NAME,
+		LICENSE_NUMBER,
+		LICENSE_DATE,
+		LICENSE_INST,
+		LICENSE_SCORE,
+		LICENSE_ETC,
+		USER_ID
+		) values ( 
+		#{licenseName},
+		#{licenseNumber},
+		#{licenseDate},
+		#{licenseInst},
+		#{licenseScore},
+		#{licenseEtc},
+		#{userId}
+		)
+	</insert>
+	<select id="selectExpCount" parameterType="String" resultType="Integer">
+		select count(*) 
+		from EXP 
+		where USER_ID =#{userId} 
+	</select>
+	
+	<select id="selectExpMax" parameterType="String" resultType="Integer">
+		select MAX(EXP_NUMBER)
+		from EXP 
+		where USER_ID =#{userId} 
+	</select>
+	<select id="selectLicenseCount" parameterType="String" resultType="Integer">
+		select count(*) 
+		from LICENSE 
+		where USER_ID=#{userId} 
+	</select>
+	<select id="selectExpList" parameterType="String" resultType="Hashmap">
+		select * 
+		from EXP 
+		where USER_ID=#{userId}
+	</select>
+	<select id="selectLicenseList" parameterType="String" resultType="Hashmap">
+		select * 
+		from LICENSE 
+		where USER_ID=#{userId}
+	</select>
+	<update id="updateExp" parameterType="Exp">
+		update EXP
+		set EXP_DATE=#{expDate},
+		EXP_WORKING=#{expWorking},
+		EXP_SUBJECT=#{expSubject},
+		EXP_ROLE=#{expRole},
+		EXP_CONTENT=#{expContent},
+		EXP_SOLVE=#{expSolve},
+		EXP_LEARN=#{expLearn},
+		EXP_ETC=#{expEtc},
+		EXP_HARD=#{expHard}
+		where USER_ID=#{userId} and EXP_NUMBER=#{expNumber}
+	</update>
+	<update id="updateLicense" parameterType="License">
+		update LICENSE 
+		set LICENSE_NAME=#{licenseName},
+		LICENSE_DATE=#{licenseDate},
+		LICENSE_INST=#{licenseInst},
+		LICENSE_SCORE=#{licenseScore},
+		LICENSE_ETC=#{licenseEtc} 
+		where USER_ID=#{userId} and LICENSE_NUMBER=#{licenseNumber}
+	</update>
+	<delete id="deleteExp" parameterType="Exp">
+		delete from EXP where USER_ID=#{userId} and EXP_NUMBER=#{expNumber}
+	
+	</delete>
+	<delete id="deleteLicense" parameterType="License">
+	delete from LICENSE where USER_ID=#{userId} and LICENSE_NUMBER=#{licenseNumber}
+	</delete>
+	
+	<select id="selectExpAll" parameterType="String" resultType="hashmap">
+		select *
+		from RESUME_DETAIL
+		where RESUME_NUMBER in (
+								select RESUME_NUMBER
+								from RESUME 
+								where USER_ID = #{userId}
+		)
+		
+	</select>
+	<!-- 둘 다로 검색하기 -->
+	<select id="selectExpBySolvedAndQuestion" parameterType="hashmap" resultType="hashmap">
+		select *
+		from RESUME_DETAIL
+		where
+		RESUME_Q  like CONCAT('%', #{array[2]}, '%') 
+			and
+			RESUME_NUMBER in (
+								select RESUME_NUMBER
+								from 	RESUME
+								where RESUME_PASS = #{array[1]} and USER_ID = #{array[0]}
+		)
+	</select>
+<!-- 풀었는지 여부로 검색하기 -->
+	<select id="selectExpBySolved" parameterType="hashmap" resultType="hashmap">
+		select *
+		from RESUME_DETAIL
+		where RESUME_NUMBER in (
+								select RESUME_NUMBER
+								from 	RESUME
+								where RESUME_PASS = #{array[1]} and USER_ID = #{array[0]}
+		)
+	</select>
+	
+<!-- 검색어로 검색하기 -->
+	<select id="selectExpByQuestion" parameterType="hashmap" resultType="hashmap">
+		select *
+		from RESUME_DETAIL
+		where
+		RESUME_Q  like CONCAT('%', #{array[2]}, '%') 
+			and
+			RESUME_NUMBER in (
+								select RESUME_NUMBER
+								from 	RESUME
+								where USER_ID = #{array[0]}
+								)
+	</select>
+</mapper>

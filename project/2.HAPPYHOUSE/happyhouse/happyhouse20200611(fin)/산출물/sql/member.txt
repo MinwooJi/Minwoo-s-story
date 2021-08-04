@@ -1,0 +1,9 @@
+CREATE TABLE `member` (
+  `id` varchar(15) NOT NULL,
+  `password` varchar(20) DEFAULT NULL,
+  `name` varchar(30) DEFAULT NULL,
+  `phone` varchar(15) DEFAULT NULL,
+  `address` varchar(50) DEFAULT NULL,
+  `zipcode` int DEFAULT NULL,
+  PRIMARY KEY (`id`)
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_0900_ai_ci

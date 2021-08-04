@@ -1,0 +1,70 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!-- mappers/gueset.xml -->
+<!DOCTYPE mapper
+    PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+    "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.ssafy.happyhouse.model.dao.HouseDAO"> <!-- mybatis는 namespace필수!! -->
+ 	<select id="searchAll" parameterType="housepagebean" resultType="housedeal">
+   		select * 
+   			from housedeal 
+   		  where 1=1
+   		  <choose>
+   		  	<when test="dong != null">
+   				and dong like CONCAT('%',#{dong},'%')
+   		  	</when>
+   		  	<when test="aptname != null">
+   				and AptName like CONCAT('%',#{aptname},'%')
+   		  	</when>
+   		  </choose>
+   			
+   </select>
+   
+   <select id="search" parameterType="int" resultType="HouseDeal">
+   		select * 
+   			from housedeal 
+   		  where no = #{no} 
+   </select>
+   <select id="searchByName" parameterType="string" resultType="HouseDeal">
+   		select * 
+   			from housedeal 
+   		  where AptName = #{AptName}
+   </select>
+   
+   <select id="searchNotice" resultType="Notice">
+   		select * 
+   			from notice 
+   		  where 1=1
+   </select>
+   
+   <select id="searchNoticeByNo" parameterType="int" resultType="Notice">
+   		select * 
+   			from notice 
+   		where noticeno = #{no}
+   </select>
+   
+   
+   
+   <select id="getSize" parameterType="housepagebean" resultType="int">
+   		select count(*) as size 
+   			from housedeal 
+   		  where 1=1
+   		  <choose>
+   		  	<when test="dong != null">
+   				and dong like CONCAT('%',#{dong},'%')
+   		  	</when>
+   		  	<when test="aptname != null">
+   				and AptName like CONCAT('%',#{aptname},'%')
+   		  	</when>
+   		  </choose>
+   </select>
+   <select id="HouseDAOImpl" resultType="int">
+   		select count(*) as size 
+   			from housedeal
+   </select>
+</mapper>    
+    
+    
+    
+    
+    
+    

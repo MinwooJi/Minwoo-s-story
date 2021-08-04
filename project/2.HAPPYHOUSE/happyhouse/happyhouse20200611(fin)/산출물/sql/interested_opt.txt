@@ -1,0 +1,13 @@
+CREATE TABLE `interested_opt` (
+  `no` int NOT NULL AUTO_INCREMENT COMMENT 'no',
+  `id` varchar(45) NOT NULL COMMENT 'id',
+  `sido` varchar(45) NOT NULL COMMENT 'sido',
+  `gugun` varchar(45) NOT NULL COMMENT 'gugun',
+  `dong` varchar(45) NOT NULL COMMENT 'dong',
+  `price` varchar(45) DEFAULT NULL COMMENT 'price',
+  `space` varchar(45) DEFAULT NULL COMMENT 'area',
+  `floor` varchar(45) DEFAULT NULL COMMENT 'floor',
+  PRIMARY KEY (`no`),
+  KEY `FK_interested_opt_id_member_id` (`id`),
+  CONSTRAINT `FK_interested_opt_id_member_id` FOREIGN KEY (`id`) REFERENCES `member` (`id`) ON DELETE RESTRICT ON UPDATE RESTRICT
+) ENGINE=InnoDB AUTO_INCREMENT=20 DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_0900_ai_ci COMMENT='interested_opt'

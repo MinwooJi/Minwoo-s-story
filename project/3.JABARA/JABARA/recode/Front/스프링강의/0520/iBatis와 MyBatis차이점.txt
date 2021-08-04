@@ -1,0 +1,135 @@
+<<iBatis>>   
+ 1. 호출객체      
+    - SqlMapClient
+    예)  SqlMapClient sqlMap;
+                      sqlMap.insert();
+
+ 2. DML호출
+    - insert(String id[, Object value])
+      delete(String id[, Object value])
+      update(String id[, Object value])
+
+ 3. DQL호출      
+    - queryForObject(String id[, Object value])   : 조회결과가 한개 행일때
+    - queryForList(String id[, Object value])     : 조회결과가 두개 이상의 행일때
+                      
+ 4. NameSpace     
+    - 권장
+      예)  <sqlMap></sqlMap>                     : 실행가능
+           <sqlMap namespace="emp"></sqlMap>     : 실행가능
+                    
+ 5. 파라미터처리       
+    - #username#                    
+      예)  <select id="select" parameterClass="String">
+              select userid from userTable
+              where username=#username#
+           </select>
+
+ 6. 속성
+    - resultClass, parameterClass    
+      예) <select id="아이디" resultClass="자료형" parameterClass="자료형">
+              조회SQL문
+       </select>
+
+
+ 7. parameter속성      
+    - 생략가능                      
+         ----> 잇점:  파라미터 타입을 명시하지 않으면 VO또는 Map을 자유롭게 전달할 수 있음.
+
+    예)  <select id="select" resultClass="자료형" parameterClass="EmpVO">
+              조회SQL문
+         </select>    
+         ----> sqlMap.queryForObject("emp.select", new EmpVO());    실행성공
+         ----> sqlMap.queryForObject("emp.select", new HashMap());  실행실패
+
+         <select id="select" resultClass="자료형">
+              조회SQL문
+         </select>    
+         ----> sqlMap.queryForObject("emp.select", new EmpVO());    실행성공
+         ----> sqlMap.queryForObject("emp.select", new HashMap());  실행성공
+
+	             
+ 8. result속성    
+    - 생략시 null리턴   
+
+    예)  <select id="select">
+              조회SQL문
+      </select>           
+         ----> Object ob = sqlMap.queryForObject("emp.select");
+               System.out.println(ob); ----> null 출력
+               
+================================================================================
+<<MyBatis>>
+
+ 1. 호출객체      
+    - SqlSession                    ===> XML문서에 정의된 sql문 호출 가능!!
+    예)  SqlSession sqlSession;
+                      sqlSession.insert();
+
+ 2. DML호출
+    - insert(String id[, Object value])
+      delete(String id[, Object value])
+      update(String id[, Object value])
+
+ 3. DQL호출      
+    - selectOne(String id[, Object value])   : 조회결과가 한개 행일때
+    - selectList(String id[, Object value])     : 조회결과가 두개 이상의 행일때
+                      
+ 4. NameSpace     
+    - 필수
+      예)  <mapper></mapper>                        : 실행에러!!
+           <mapper namespace="emp"></mapper>     : 실행가능
+                    
+ 5. 파라미터처리       
+    - #{username}                    
+      예)  <select id="select" parameterClass="String">
+              select userid from userTable
+              where username=#{username}
+           </select>
+
+ 6. 속성
+    - resultType, parameterType    
+      예) <select id="아이디" resultType="자료형" parameterType="자료형">
+              조회SQL문
+       </select>
+
+
+ 7. parameter속성      
+    - 생략가능                      
+         ----> 잇점:  파라미터 타입을 명시하지 않으면 VO또는 Map을 자유롭게 전달할 수 있음.
+
+    예)  <select id="select" resultType="자료형" parameterType="EmpVO">
+              조회SQL문
+         </select>    
+         ----> sqlMap.queryForObject("emp.select", new EmpVO());    실행성공
+         ----> sqlMap.queryForObject("emp.select", new HashMap());  실행실패
+
+         <select id="select" resultType="자료형">
+                   조회SQL문
+                   where  컬럼명=#{empno}
+                       ----> 전달데이터가 VO라면   out.print(vo.getEmpno()) 
+                       ----> 전달데이터가 Map이라면   out.print(map.get("empno")) 
+         </select>    
+         ----> sqlMap.queryForObject("emp.select", new EmpVO());    실행성공
+         ----> sqlMap.queryForObject("emp.select", new HashMap());  실행성공
+
+	             
+ 8. result속성    
+    - 생략시 에러발생   
+
+    예)  <select id="select">
+              조회SQL문
+      </select>           
+         ----> Object ob = sqlSession.selectOne("emp.select"); //에러발생!!
+               System.out.println(ob); 
+
+
+
+
+
+
+
+               
+               
+               
+               

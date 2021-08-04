@@ -1,0 +1,204 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper
+        PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+        "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.dima.test.dao.PostDao">
+<!--     SNS 게시물(글) 등록  -->
+   <insert id="insertSns" parameterType="POST">
+      insert into POST(
+         USER_ID, 
+         POST_SNS_CONTENT,
+         POST_CATEGORY
+      ) values (
+         #{userId}, 
+         #{postSnsContent},
+         'SNS'
+      )
+   </insert>
+  <!--     CODE 게시물(글) 등록  --> 
+    <insert id="insertCode" parameterType="POST">
+      insert into POST(
+         USER_ID, 
+         POST_SNS_CONTENT,
+         POST_CODE_CONTENT,
+         POST_CATEGORY,
+         POST_ALGO_TITLE,
+         IS_SOLVED
+      ) values (
+         #{userId}, 
+         #{postSnsContent},
+         #{postCodeContent},
+         'CODE',
+         #{postAlgoTitle},
+         #{isSolved}
+      ) 
+   </insert>
+   
+<select id="searchPost" resultMap="PostList">
+	select 	*
+	from POST
+	Order by POST_NUMBER  desc
+</select>
+
+<select id="searchPostByNo" parameterType="Integer" resultMap="PostList">
+	select *
+	from POST
+	where POST_NUMBER = #{postNumber}
+	Order by POST_NUMBER  desc
+</select>
+
+<resultMap id="PostList" type="Post">
+	<result property="postNumber" column="POST_NUMBER"/>
+	<result property="userId" column="USER_ID"/>
+	<result property="postAlgoTitle" column="POST_ALGO_TITLE"/>
+	<result property="postSnsContent" column="POST_SNS_CONTENT"/>
+	<result property="postCodeContent" column="POST_CODE_CONTENT"/>
+	<result property="postLike" column="POST_LIKE"/>
+	<result property="postCommentCount" column="POST_COMMENT_COUNT"/>
+	<result property="isSolved" column="IS_SOLVED"/>
+	<result property="postCategory" column="POST_CATEGORY"/>
+	<result property="postDate" column="POST_DATE"/>
+</resultMap>
+
+<select id="searchPostById" parameterType="String" resultMap="PostList">
+	select *
+	from POST
+	where USER_ID = #{userId}
+	Order by POST_NUMBER  desc
+</select>
+
+<select id="searchPostByFollowing" parameterType="String" resultMap="PostList">
+	select *
+	from POST
+	where USER_ID in (
+						select FOLLOWING_ID
+						from 	FOLLOW
+						where 	USER_ID = #{userId}
+					)
+	Order by POST_DATE desc
+</select>
+
+<!-- 게시글 수정 -->
+   <update id="updateSns" parameterType="POST">
+      update POST  
+         set POST_SNS_CONTENT = #{postSnsContent} 
+       where POST_NUMBER = #{postNumber}
+       and USER_ID = #{userId}
+   </update>
+   
+      <update id="updateCode" parameterType="POST">
+      update POST  
+         set POST_SNS_CONTENT = #{postSnsContent}, 
+             POST_CODE_CONTENT = #{postCodeContent}
+       where POST_NUMBER = #{postNumber}
+       and USER_ID = #{userId}
+   </update>
+
+<!--    게시글 삭제 -->
+   <delete id="deletePost" parameterType="int">
+      delete 
+        from POST 
+       where POST_NUMBER = #{postNumber}
+   </delete>
+   <select id="selectRankUserToday" resultType="hashmap" >
+   		select U.USER_ID , count(P.USER_ID )as `COUNT` , row_number() over(order by count(P.USER_ID ) desc) as `RANK` 
+ 		from POST P , `USER` U 
+ 		where P.USER_ID = U.USER_ID  and P.POST_CATEGORY ='CODE' and P.POST_DATE BETWEEN DATE_ADD(now(),interval -1 day) and now()
+ 		group by U.USER_ID 
+ 		order by count(P.USER_ID ) desc
+		limit 5;
+   </select>
+   <select id="selectRankingTotal" resultType="hashmap">
+	    select U.USER_ID , count(P.USER_ID ) as `COUNT`, row_number() over(order by count(P.USER_ID ) desc) as `RANK`
+		 from POST P , USER U 
+	 	where P.USER_ID = U.USER_ID  and P.POST_CATEGORY ='CODE'
+	 	group by U.USER_ID 
+	 	order by count(P.USER_ID ) desc
+		limit 5;
+   </select>
+   
+   <select id="myRankingTotal" parameterType="String" resultType="Integer">
+	   select `RANK`
+	from RANKING 
+	where USER_ID = #{userId}
+   </select>
+   
+   <!-- 좋아요 클릭 시-->
+<update id="likePost" >
+	update POST
+	set POST_LIKE = POST_LIKE + 1
+	where POST_NUMBER = #{postNumber}
+</update>
+
+<!-- 좋아요 취소 클릭 시-->
+<update id="unlikePost">
+	update POST
+	set POST_LIKE = POST_LIKE - 1
+	where POST_NUMBER = #{postNumber}
+</update>
+<!-- 좋아요 갯수 넘겨주기 -->
+<select id="searchlikePost" parameterType="Integer" resultType="Integer" >
+	select POST_LIKE
+	from POST
+	where POST_NUMBER = #{postNumber};
+</select>
+
+<!-- 푼 문제 넘겨주기 -->
+<select id="searchAlgoSolved" parameterType="String" resultType="String">
+	select POST_ALGO_TITLE 
+	from POST
+	where USER_ID = #{userId} and IS_SOLVED = 1
+</select>
+<!-- 못 푼 문제 넘겨주기 -->
+<select id="searchAlgoUnSolved" parameterType="String" resultType="String">
+	select POST_ALGO_TITLE 
+	from POST
+	where USER_ID = #{userId} and IS_SOLVED = 0 and POST_CATEGORY = 'CODE'
+</select>
+<select id="selectPostNumber" parameterType="Post" resultType="Integer">
+	select MAX(POST_NUMBER) 
+	from POST
+	where USER_ID =#{userId}; 
+</select>
+
+<!-- 모내기 -->
+<select id="searchAlgoCalendarChart" parameterType="String" resultType="hashmap">
+	select count(POST_NUMBER) as COUNT_SOLVED_ALGO, DATE(POST_DATE) as POST_DATE 
+	from POST
+	where USER_ID = #{userId} and POST_CATEGORY  ='CODE'
+	group by DATE(POST_DATE);
+</select>
+
+<!-- ///////////////////즐겨찾기///////////////////// -->
+<insert id="insertStarPost" parameterType="Post">
+	insert into POST_STAR
+	values( #{userId}, #{postNumber})
+	
+</insert>
+
+<delete id="deleteStarPost" parameterType="Post">
+	delete
+	from POST_STAR
+	where USER_ID = #{userId} and POST_NUMBER = #{postNumber}
+</delete>
+<select id="checkStarPost" parameterType="Post" resultType="integer">
+	select count(*)
+	from POST_STAR
+	where USER_ID = #{userId} and POST_NUMBER = #{postNumber}
+</select>
+<select id="selectStarPost" parameterType="String" resultType="hashmap">
+	select *
+	from POST
+	where POST_NUMBER in (select POST_NUMBER
+						from POST_STAR
+						where USER_ID = #{userId})
+							Order by POST_NUMBER  desc
+</select>
+<select id="selectPostInfLoading" parameterType="Integer" resultMap="PostList">
+      select *
+      from POST 
+      Order by POST_NUMBER  desc
+      limit #{start},10;
+   </select>
+<!-- //////////////////////////////////////// -->
+</mapper>

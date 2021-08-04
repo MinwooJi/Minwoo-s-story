@@ -1,0 +1,13 @@
+CREATE TABLE `reply_board` (
+  `reply_no` int NOT NULL AUTO_INCREMENT COMMENT 'reply_no',
+  `qna_no` int NOT NULL COMMENT 'qna_no',
+  `reply_title` varchar(50) NOT NULL COMMENT 'reply_title',
+  `reply_content` varchar(100) DEFAULT NULL COMMENT 'reply_content',
+  `reply_datetime` timestamp NULL DEFAULT CURRENT_TIMESTAMP COMMENT 'reply_datetime',
+  `reply_userid` varchar(45) NOT NULL COMMENT 'reply_userid',
+  PRIMARY KEY (`reply_no`),
+  KEY `reply_to_user_fk4` (`reply_userid`),
+  KEY `FK_reply_board_qna_no_qna_board_qna_no` (`qna_no`),
+  CONSTRAINT `FK_reply_board_qna_no_qna_board_qna_no` FOREIGN KEY (`qna_no`) REFERENCES `qna_board` (`qna_no`) ON DELETE RESTRICT ON UPDATE RESTRICT,
+  CONSTRAINT `reply_to_user_fk4` FOREIGN KEY (`reply_userid`) REFERENCES `ssafy_member3` (`userid`)
+) ENGINE=InnoDB AUTO_INCREMENT=13 DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_0900_ai_ci

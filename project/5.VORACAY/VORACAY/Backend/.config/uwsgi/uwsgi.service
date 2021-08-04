@@ -1,0 +1,14 @@
+[Unit]
+Description=uWSGI service
+After=syslog.target
+
+[Service]
+ExecStart=/home/ubuntu/venv/bin/uwsgi -i /home/ubuntu/s03p31d106/Backend/.config/uwsgi/ssafy.ini
+Restart=always
+KillSignal=SIGQUIT
+Type=notify
+StandardError=syslog
+NotifyAccess=all
+
+[Install]
+WantedBy=multi-user.target

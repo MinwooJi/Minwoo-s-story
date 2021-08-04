@@ -1,0 +1,8 @@
+- 과제
+ 1. 사용자로부터 2개의 정수를 입력받아 덧셈 결과 출력 (sum.html)
+ 2. 구구단을 테이블에 넣어 출력해주는 프로그램(multiple.html)
+ 3. 임의의 정수 한개를 발생시켜 변수에 저장한 후 사용자가 값을 입력해 알아 맞히는 프로그램(guess.html)
+     ref) Math.floor(Math.random() * 10);     // returns a random integer from 0 to 9
+     
+3월 12일 자정까지 업로되 되어야 합니다.
+즐거운 하루 되세요~

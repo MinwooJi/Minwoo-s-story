@@ -1,0 +1,17 @@
+{
+  "socketURL": "/",
+  "dirPath": "",
+  "homePage": "/rtc/index.html",
+  "socketMessageEvent": "RTCMultiConnection-Message",
+  "socketCustomEvent": "RTCMultiConnection-Custom-Message",
+  "port": "9001",
+  "enableLogs": "false",
+  "autoRebootServerOnFailure": "false",
+  "isUseHTTPs": "false",
+  "sslKey": "/etc/letsencrypt/live/k3d106.p.ssafy.io/privkey.pem",
+  "sslCert": "/etc/letsencrypt/live/k3d106.p.ssafy.io/cert.pem",
+  "sslCabundle": "/etc/letsencrypt/live/k3d106.p.ssafy.io/fullchain.pem",
+  "enableAdmin": "true",
+  "adminUserName": "username",
+  "adminPassword": "password"
+}

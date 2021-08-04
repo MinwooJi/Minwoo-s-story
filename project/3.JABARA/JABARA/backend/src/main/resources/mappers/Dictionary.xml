@@ -1,0 +1,19 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper
+        PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+        "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+
+<mapper namespace="com.dima.test.dao.DictionaryDao">
+    <!-- 사전 전체 리스트 -->
+    <select id="selectDictionaryAll" resultType="hashmap">
+    	select *
+    	from IT_DICTIONARY
+    </select>
+	
+	 <!-- 사전 검색 리스트 -->
+    <select id="selectDictionaryByName" parameterType="String" resultType="hashmap">
+    	select *
+    	from IT_DICTIONARY
+    	where NAME like CONCAT('%', #{name}, '%')
+    </select>
+</mapper>

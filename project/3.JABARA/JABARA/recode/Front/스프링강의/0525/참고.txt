@@ -1,0 +1,115 @@
+Request
+ ----> (URL)요청  : HTML요청
+ 방법1) 주소표시줄 사용   http://192.168.0.96/guest/list
+ 방법2) <a href="http://192.168.0.96/guest/list"> </a> 
+ 방법3) <form action="http://192.168.0.96/guest/list">
+                <input name="username">
+                <textarea name='etc'>
+          </form>
+ 방법4) location.href='http://192.168.0.96/guest/list?age=13&name=길동'
+
+ ---> 파라미터 전달
+
+==========================================================
+Controller : 파라미터 수집
+
+public String ex01(String name, int age){
+    ==> String name = request.getParameter("name");
+}
+
+public class DTO{
+  String name;
+  int age;
+}
+
+public String ex01(DTO dto){
+     ==> DTO dto = new DTO();
+       dto.setName(request.getParameter("name"));
+}
+---------------------------------------------------------------------
+요청) location.href='http://192.168.0.96/guest/list?age=13&name=길동'
+
+public String ex01(int age, @RequestParam("name")  String username){
+    ==> String username = request.getParameter("name");
+}
+
+public String ex01(int age, String username, Model m){
+    ==> Model : 데이터를 (영역에)저장하는 클래스
+            ==>의미상 Request영역과 같다
+    m.addAttribute("keyname", username);
+    return "hello";
+}
+
+public String ex01(int age, @ModelAttribute("keyname") String username){
+    return "hello";
+}
+
+public String test(RedirectAttributes attr, String username){
+   DAO dao = new DAO();
+    String msg;
+    if(dao.insert(username)){
+        msg="success";
+    }
+
+   attr.addFlashAttribute("msg",msg);
+
+   return "redirect:/hello";
+}
+
+
+================================================
+a.jsp
+   request.setAttribute("key","안녕하세요~!!");
+   1. forward("b.jsp")
+        ----> session.setAttribute("key2","봉쥬르~!!");
+   2. redirect("b.jsp")
+         
+================================================
+b.jsp
+  1. out.print(request.getAttribute("key"));   '안녕'출력!!
+  2. out.print(request.getAttribute("key"));   null 출력!!
+     out.print(session.getAttribute("key2"));  '봉쥬르' 출력!!
+
+=================================================
+<Controller의 리턴!!>
+
+@RequestMapping("hello")
+public void test1(){
+} ===> void경우  요청URL이 뷰페이지와 같음!!
+  ===>  return "hello";   ---> hello.jsp
+
+@RequestMapping("hello2")
+public String test2(){
+   return "good";    ----> good.jsp 출력(페이지 이동O)
+}
+
+@RequestMapping("hello3")
+public @ResponseBody String test3(){
+   return "good";    ----> "good"문자열을 전달 (페이지 이동X)
+}
+
+@RequestMapping("hello4")
+public @ResponseBody DTO test4(){
+   DTO  dto = new DTO("길동",13)
+   return dto;    ----> {"name":"길동", "age":13} JSON을 전달 (페이지 이동X)
+}
+
+@RequestMapping("hello4")
+public @ResponseBody DTO test4(){
+   DTO  dto = new DTO("길동",13)
+   return dto;    ----> {"name":"길동", "age":13} JSON을 전달 (페이지 이동X)
+}
+
+@RequestMapping("hello4")
+public ResponseEntity<String> test4(){
+   return new ResponseEntity<>("SUCCESS", HttpStatus.OK);
+                              ---------- ---------------
+                                                          전달데이터   서버상태 재정의
+}
+
+//ResponseEntity 개념  == @ResponseBody 개념   (리턴 DATA!!)
+//==> 차이점 : ResponseEntity는 리턴DATA 이외에 헤더정보,
+                                                    응답코드종류를 조작하는 것이 가능!!
+                                                    ----------
+                                                   404, 500, 200
+

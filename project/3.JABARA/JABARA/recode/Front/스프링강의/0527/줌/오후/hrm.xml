@@ -1,0 +1,102 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper
+        PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+        "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.ssafy.hrm.dao.EmployeeDAO">
+	<select id="selectEmployee" resultType="Employee">
+		select  e.id id,
+				e.name name,
+				e.mailid mailid,
+				e.start_date start_date,
+				e.manager_id manager_id,
+				e.title title,
+				e.dept_id dept_id,
+				d.name dept_name,
+				ifnull(e.salary, 0.0) salary,
+				ifnull(e.commission_pct, 0.0) commission_pct
+		  from s_emp e join s_dept d
+		                 on e.dept_id = d.dept_id
+		 order by e.id
+	</select>
+
+	<insert id="insertEmployee" parameterType="Employee">
+		INSERT INTO s_emp(
+			id,
+			name,
+			mailid,
+			start_date,
+			manager_id,
+			title,
+			dept_id,
+			salary,
+			commission_pct
+		) VALUES (
+			#{id},
+			#{name},
+			#{mailid},
+			#{start_date},
+			<choose>
+				<when
+					test="manager_id != '' and manager_id != null and manager_id != 0">
+					#{manager_id}
+				</when>
+				<otherwise>null</otherwise>
+			</choose>
+			,
+			#{title},
+			#{dept_id},
+			#{salary},
+			<choose>
+				<when
+					test="commission_pct != '' and commission_pct != null and commission_pct != 0">
+					#{commission_pct}
+				</when>
+				<otherwise>null</otherwise>
+			</choose>
+		)
+	</insert>
+	
+	<select id="selectEmployeeById" resultType="Employee">
+		select id, 
+			   name, 
+			   mailid, 
+			   start_date, 
+			   manager_id, 
+			   title, 
+			   dept_id,
+			   ifnull(salary,0.0) salary, 
+			   ifnull(commission_pct,0.0) commission_pct
+		  from s_emp 
+		 where id= #{id}
+	</select>
+
+	<update id="updateEmployee" parameterType="Employee">
+		UPDATE s_emp 
+		   SET name=#{name}, 
+		   	   mailid=#{mailid}, 
+		   	   start_date=#{start_date},
+			   manager_id=#{manager_id}, 
+			   title=#{title},
+		       dept_id=#{dept_id},
+		       salary=#{salary},
+				<choose>
+					<when test="commission_pct != '' and commission_pct != null and  commission_pct != 0">
+						commission_pct=#{commission_pct}
+					</when>
+					<otherwise>
+						commission_pct=null
+					</otherwise>
+				</choose>
+		WHERE id=#{id}
+	</update>
+
+	<delete id="deleteEmployee" parameterType="int">
+		DELETE FROM s_emp WHERE id=#{id}
+	</delete>
+
+	<select id="selectEmployeeMaxId" resultType="int">
+		SELECT MAX(id) + 1 FROM s_emp
+	</select>
+
+</mapper>
+

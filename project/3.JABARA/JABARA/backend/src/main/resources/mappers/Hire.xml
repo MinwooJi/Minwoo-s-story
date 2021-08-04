@@ -1,0 +1,149 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper
+        PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+        "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.dima.test.dao.HireDao">
+
+<!-- 채용 정보 조회 -->
+<select id="selectHire"  resultType="hashmap">
+	select *
+	from HIRE_INFORMATION 
+</select>
+
+<!-- 채용 정보 max num 조회 이미지 입력을 위한-->
+<select id="selectMaxHireNumber"  resultType="Integer">
+	select MAX(HIRE_NUMBER) FROM HIRE_INFORMATION;
+</select>
+
+<!-- 채용 정보 추가  -->
+<insert id="insertHire" parameterType="hire">
+	insert into HIRE_INFORMATION (
+						COMPANY_NAME,
+						START_DATE,
+						END_DATE,
+						COMPANY_URL,
+						COMPANY_IMAGE
+						)
+				values(
+						#{companyName},
+						#{startDate},
+						#{endDate},
+						#{companyUrl},
+						#{companyImage}
+						)
+</insert>
+
+<!-- 채용 달력 수정  -->
+<update id="updateHire" parameterType="Hire">
+	update HIRE_INFORMATION
+	set COMPANY_NAME = #{companyName},
+		START_DATE = #{startDate},
+		END_DATE = #{endDate},
+		COMPANY_URL = #{companyUrl},
+		COMPANY_IMAGE = #{companyImage}
+	where HIRE_NUMBER = #{hireNumber}
+</update>
+
+<!-- 채용 달력 삭제  -->
+<delete id="deleteHire" parameterType="Integer">
+	delete 
+	from HIRE_INFORMATION
+	where HIRE_NUMBER = #{hireNumber}
+</delete>
+
+<!-- 채용 정보 마이캘린더에 추가 -->
+<insert id="insertHireToMyCal" parameterType="Hire">
+	insert into MY_CAL(
+						USER_ID,
+						HIRE_NUMBER,
+						START_DATE,
+						END_DATE,
+						CAL_TITLE,
+						CAL_NUMBER
+						)
+				values(
+						#{userId},
+						#{hireNumber},
+						#{startDate},
+						#{endDate},
+						#{companyName},
+						#{myCalNumber}
+						)
+</insert>
+
+<!-- 채용 정보 추가 시 번호 설정 -->
+<select id="setMyApplyNumber" parameterType="String">
+	select MAX(MY_APPLY_NUMBER)
+	from   MY_APPLY
+	where USER_ID = #{userId}
+</select>
+
+<!-- 채용 정보 내 지원내역에 추가 -->
+<insert id="insertMyApplyFromHire" parameterType="Hire">
+	insert into MY_APPLY(
+						MY_APPLY_NUMBER,
+						HIRE_NUMBER,
+						USER_ID,
+						COMPANY_NAME,
+						COMPANY_URL,
+						COMPANY_IMAGE
+						)
+				values(
+						#{myApplyNumber},
+						#{hireNumber},
+						#{userId},
+						#{companyName},
+						#{companyUrl},
+						#{companyImage}
+						)
+</insert>
+
+<!-- MYAPPLY에 들어온 데이터가 중복인지 확인하기 (HireNumber로) -->
+<select id="selectHireNumber" parameterType="Hire" resultType="Integer">
+	select count(HIRE_NUMBER)
+	from MY_APPLY
+	where (HIRE_NUMBER = #{hireNumber}) 
+	  and (USER_ID=#{userId})
+</select>
+
+<!-- MYAPPLY에 값이 있는지 확인하기 -->
+<select id="selectHireNumberCount" parameterType="String" resultType="Integer">
+	select count(HIRE_NUMBER)
+	from MY_APPLY
+	where USER_ID = #{userId}
+</select>
+
+<resultMap id="HireList" type="Hire">
+	<result property="hireNumber" column="HIRE_NUMBER"/>
+	<result property="companyName" column="COMPANY_NAME"/>
+	<result property="startDate" column="START_DATE"/>
+	<result property="endDate" column="END_DATE"/>
+	<result property="companyUrl" column="COMPANY_URL"/>
+	<result property="companyImage" column="COMPANY_IMAGE"/>
+</resultMap>
+
+<!-- MY_APPLY 일정 추가할 값들 불러오기 -->
+<select id="selectHireForMyApply" parameterType="Integer" resultMap="HireList">
+	select *
+	from HIRE_INFORMATION
+	where HIRE_NUMBER = #{hireNumber}
+</select>
+
+<select id="selectMyCalNumberMax" parameterType="String" resultType="Integer">
+	select MAX(CAL_NUMBER)
+	FROM MY_CAL
+	WHERE USER_ID = #{userId}
+</select>
+
+<select id="selectMyCalNumberCount" parameterType="String" resultType="Integer">
+	select count(CAL_NUMBER)
+	FROM MY_CAL
+	WHERE USER_ID = #{userId}
+</select>
+
+<select id="selectMyApplyNumber" parameterType="String" resultType="Integer">
+	select count(MY_APPLY_NUMBER)
+	from MY_APPLY
+	where USER_ID = #{userId}
+</select>
+</mapper>

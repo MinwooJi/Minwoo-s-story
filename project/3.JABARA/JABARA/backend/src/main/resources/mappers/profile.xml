@@ -1,0 +1,170 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper
+        PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+        "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.dima.test.dao.ProfileDao">
+
+<!-- 지원한 회사 직접 입력 -->
+<insert id="insertMyApply" parameterType="MyApply">
+	insert into MY_APPLY(
+						MY_APPLY_NUMBER,
+						USER_ID,
+						HIRE_NUMBER,
+						COMPANY_NAME,
+						COMPANY_URL,
+						COMPANY_IMAGE
+						)
+	values(
+			#{myApplyNumber},
+			#{userId},
+			#{hireNumber},
+			#{companyName},
+			#{companyUrl},
+			#{companyImage}
+			)
+</insert>
+
+<!-- MY_APPLY 번호 넘겨주기 -->
+<select id="selectMyApplyNumber" parameterType="String" resultType="Integer">
+	select count(MY_APPLY_NUMBER)
+	from MY_APPLY
+	where USER_ID =#{userId}; 
+</select>
+
+<select id="selectMyApplyNumberMax" parameterType="String" resultType="Integer">
+	select MAX(MY_APPLY_NUMBER)
+	from MY_APPLY
+	where USER_ID =#{userId}; 
+</select>
+
+
+<!-- 내가 지원한 회사 전체 조회 -->
+<select id="selectMyApply" parameterType="String" resultType="hashmap">
+	select *
+	FROM MY_APPLY 
+	WHERE USER_ID = #{userId};
+</select>
+
+<!-- 내가 지원한 회사 삭제하기 -->
+<delete id="deleteMyApply" parameterType="Integer">
+	delete 
+	From MY_APPLY
+	WHERE MY_APPLY_NUMBER = #{myApplyNumber}
+</delete>
+
+<!-- 자기소개서 리스트 -->
+<select id="selectMyResume" parameterType="String" resultType="hashmap">
+	select *
+	from RESUME
+	where USER_ID = #{userId}
+</select>
+
+<!-- 합 불합 변경하기 -->
+<update id="updatePass" parameterType="RESUME">
+	update RESUME
+	set RESUME_PASS = #{resumePass}
+	where RESUME_NUMBER = #{resumeNumber} and USER_ID = #{userId}
+</update>
+
+<!-- 자기소개서 상세  -->
+<select id="selectResumeDetail" parameterType="Resume" resultType="hashmap">
+	select *
+	from RESUME_DETAIL
+	where USER_ID = #{userId} and RESUME_NUMBER = #{resumeNumber}
+</select>
+
+<!-- 자기소개서 입력 -->
+<insert id="insertResume" parameterType="RESUME">
+	insert into RESUME(
+						RESUME_NUMBER,
+						USER_ID,
+						COMPANY_NAME,
+						RESUME_PASS,
+						RESUME_DATE
+						)
+				values(
+						#{resumeNumber},
+						#{userId},
+						#{companyName},
+						#{resumePass},
+						#{resumeDate}
+				)		
+</insert>
+
+<!-- 자기소개서 문항 추가 -->
+<insert id="insertQuestion" parameterType="ResumeDetail">
+	insert into RESUME_DETAIL(
+								RESUME_NUMBER,
+								QUESTION_NUMBER,
+								RESUME_Q,
+								RESUME_A,
+								USER_ID
+								)
+						values(
+								#{resumeNumber},
+								#{questionNumber},
+								#{resumeQ},
+								#{resumeA},
+								#{userId}
+								)
+</insert>
+
+
+
+<!-- 자기소개서 수정하기 -->
+<update id="updateResume" parameterType="RESUME">
+	update RESUME 
+	set COMPANY_NAME = #{companyName},
+		RESUME_PASS=#{resumePass},
+		RESUME_DATE=#{resumeDate}
+	where RESUME_NUMBER = #{resumeNumber} and USER_ID = #{userId}
+</update>
+
+<!-- 자기소개서 문항 수정하기 -->
+<update id="updateResumeDetail" parameterType="resumeDetail">
+	update RESUME_DETAIL
+	set RESUME_Q = #{resumeQ},
+		RESUME_A = #{resumeA}
+	where RESUME_NUMBER = #{resumeNumber} and QUESTION_NUMBER = #{questionNumber} and USER_ID = #{userId}
+</update>
+
+<!-- 자기소개서 삭제  -->
+<delete id="deleteResume" parameterType="Resume">
+	delete
+	from RESUME
+	where RESUME_NUMBER=  #{resumeNumber} and USER_ID = #{userId}
+</delete>
+
+<!-- 자소서 문항 삭제하기 -->
+<delete id="deleteQuestion" parameterType="resumeDetail">
+	delete 
+	from RESUME_DETAIL
+	where QUESTION_NUMBER = #{questionNumber} and RESUME_NUMBER = #{resumeNumber} and USER_ID = #{userId}
+</delete>
+
+<!-- 자소서 번호 넘겨주기 -->
+<select id="selectResumeNumber" parameterType="String" resultType="Integer">
+	select count(RESUME_NUMBER) 
+	from RESUME
+	where USER_ID =#{userId}; 
+</select>
+
+<select id="selectResumeNumberMax" parameterType="String" resultType="Integer">
+	select MAX(RESUME_NUMBER) 
+	from RESUME
+	where USER_ID =#{userId}; 
+</select>
+
+<!-- 자소서 상세 번호 넘겨주기 -->
+<select id="selectQuestionNumber" parameterType="ResumeDetail" resultType="Integer">
+	select count(QUESTION_NUMBER) 
+	from RESUME_DETAIL
+	where USER_ID =#{userId} and RESUME_NUMBER = #{resumeNumber}; 
+</select>
+
+<select id="selectQuestionNumberMax" parameterType="ResumeDetail" resultType="Integer">
+	select MAX(QUESTION_NUMBER) 
+	from RESUME_DETAIL
+	where USER_ID =#{userId} and RESUME_NUMBER = #{resumeNumber};
+</select>
+</mapper>

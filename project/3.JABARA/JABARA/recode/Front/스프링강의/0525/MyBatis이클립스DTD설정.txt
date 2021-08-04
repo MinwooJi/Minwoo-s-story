@@ -1,0 +1,18 @@
+<이클립스에 MyBatis관련 DTD설정>
+Window메뉴
+ - Preferences
+ - XML Catalog
+ - Add..버튼클릭
+
+※ mybatis-config.xml(mybatis환경설정하는 XML문서)
+
+Location입력                    ==> http://mybatis.org/dtd/mybatis-3-config.dtd
+Key입력                             ==> -//mybatis.org//DTD Config 3.0//EN
+Alternative web addres==> http://mybatis.org/dtd/mybatis-3-config.dtd
+
+----------------------------------------------------------------------
+※ mapper.xml(sql문 작성하는 XML문서) sql매핑XML
+
+Location입력                    ==> http://mybatis.org/dtd/mybatis-3-mapper.dtd
+Key입력                             ==> -//mybatis.org//DTD Mapper 3.0//EN
+Alternative web addres==> http://mybatis.org/dtd/mybatis-3-mapper.dtd

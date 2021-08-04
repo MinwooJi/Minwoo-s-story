@@ -1,0 +1,118 @@
+﻿<!-- menu main !!!!!!!ㄴ -->
+<!DOCTYPE html>
+<html lang="ko">
+  <head>
+    <meta charset="utf-8" />
+    <!-- <meta name="viewport" content="width=device-width" /> -->
+    <!-- 웹 페이지의 크기가 모니터가 스마트폰의 실제 액정 크기를 따라가도록. -->
+    <meta
+      name="viewport"
+      content="width=device-width, initial-scale=1, shrink-to-fit=no"
+    />
+    <link
+      href="https://fonts.googleapis.com/css2?family=Viga&display=swap"
+      rel="stylesheet"
+    />
+    <link
+      href="https://fonts.googleapis.com/css2?family=Jua&family=Noto+Sans+KR:wght@500&display=swap"
+      rel="stylesheet"
+    />
+    <link
+      href="https://fonts.googleapis.com/css2?family=Do+Hyeon&display=swap"
+      rel="stylesheet"
+    />
+    <title>VODA | 미팅룸 참여</title>
+
+    <style>
+      .meeting-main {
+        /* background-image: linear-gradient(to right top, #ffb9f0, #fcb8f2, #f9b6f4, #f5b5f7, #f1b4f9, #f0b2f9, #efb0fa, #eeaefa, #f1aaf9, #f3a6f7, #f6a2f5, #f99ef3); */
+        background-image: linear-gradient(
+          to right top,
+          #e8b9ff,
+          #f0b8fc,
+          #d7b6f9,
+          #d9b5f7,
+          #c9b4f9,
+          #b8b2f9,
+          #dba6e7,
+          #faaede,
+          #f9aaeaf0,
+          #f7a6c3,
+          #f6a2c7,
+          #c39ef9
+        );
+        width: 100vw;
+        height: 100vh;
+        position: fixed;
+        margin: 0;
+        top: 0;
+        left: 0;
+        right: 0;
+        bottom: 0;
+        z-index: 1;
+        font-family: "Viga", sans-serif;
+        color: rgb(255, 255, 255);
+        font-size: 20px;
+      }
+      .main-box {
+        width: 100vh;
+        position: absolute;
+        top: 47%;
+        left: 50%;
+        transform: translate(-50%, -50%);
+      }
+      .meeting-button {
+        display: flex;
+        flex-direction: column;
+        justify-content: center;
+        align-items: center;
+      }
+      button {
+        font-weight: bolder;
+        width: 100%;
+        margin-bottom: 20px;
+        padding: 50px 200px;
+        border-radius: 5px;
+        /* height: 40px; */
+        transition: all ease 0.5s;
+        border: 1px solid rgba(255, 255, 255, 0.932);
+        background-color: rgba(250, 176, 250, 0.233);
+        font-family: "DoHeyeon", sans-serif;
+        color: white;
+        font-size: 30px;
+      }
+      button:hover {
+        cursor: pointer;
+        transform: scale(1.1);
+        font-weight: bolder;
+        background-color: #cd9af1b7;
+        color: rgba(83, 35, 95, 0.76);
+        box-shadow: 0 0 20px rgba(225, 65, 247, 0.616);
+      }
+      button:focus {
+        outline: none !important;
+        border: 0;
+        border: 2px solid rgba(167, 47, 236, 0.616);
+        box-shadow: 0 0 20px rgba(225, 65, 247, 0.616);
+      }
+    </style>
+  </head>
+  <body>
+    <div class="meeting-main">
+      <div class="main-box">
+        <!-- <div class="header-choose">
+          <a href="/mypage">My Page</a>
+          <a href="/meeting/setting">Setting</a>
+        </div> -->
+        <!-- <div class="profile">
+          <img src="https://www.thestatesman.com/wp-content/uploads/2017/08/1493458748-beauty-face-517.jpg" alt="" width="150" height="150">
+        </div> -->
+        <div class="meeting-button">
+          <a href="/voda/create/"><button>미팅시작</button></a>
+          <a href="/voda/join/"><button>미팅참여</button></a>
+          <!-- <a href="/reservate"><button>예약하기</button></a> -->
+        </div>
+      </div>
+    </div>
+  </body>
+</html>

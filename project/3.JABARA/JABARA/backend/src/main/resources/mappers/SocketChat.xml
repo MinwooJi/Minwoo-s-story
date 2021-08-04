@@ -1,0 +1,51 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper
+        PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+        "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.dima.test.dao.SocketChatDao">
+
+	<insert id="insertChat" parameterType="socketChat">
+		insert into SOCKET_CHAT(CHAT_ROOM, MESSAGE_NUMBER, USER_ID, OTHER_ID, CONTENT, DATE)
+		values(#{chatRoom}, #{messageNumber}, #{userId}, #{otherId}, #{content}, NOW())
+	</insert>
+	
+	<select id="findChatRoom" parameterType="socketChat" resultType="Integer">
+		select count(CHAT_ROOM)
+		from SOCKET_CHAT
+		where  (USER_ID = #{userId} and OTHER_ID = #{otherId}) OR 
+		(USER_ID = #{otherId} and OTHER_ID = #{userId});
+	</select>
+	
+	<resultMap id="chatList" type="socketChat">
+	<result property="chatRoom" column="CHAT_ROOM"/>
+	<result property="messageNumber" column="MESSAGE_NUMBER"/>
+	<result property="userId" column="USER_ID"/>
+	<result property="otherId" column="OTHER_ID"/>
+	<result property="content" column="CONTENT"/>
+	<result property="date" column="DATE"/>
+</resultMap>
+
+	<select id="findChatRoomInform" parameterType="socketChat" resultMap="chatList">
+		select CHAT_ROOM, MAX(MESSAGE_NUMBER) as MESSAGE_NUMBER, USER_ID, OTHER_ID, CONTENT, DATE
+		from SOCKET_CHAT
+		where  (USER_ID = #{userId} and OTHER_ID = #{otherId}) OR 
+		(USER_ID = #{otherId} and OTHER_ID = #{userId});
+	</select>
+	
+	<select id="selectChat" parameterType="socketChat" resultType="hashmap">
+							select CHAT_ROOM, MESSAGE_NUMBER, USER_ID, OTHER_ID, CONTENT, DATE_FORMAT(DATE, '%m.%d %H:%i') as DATE
+							from SOCKET_CHAT
+							where 
+							(USER_ID = #{userId} and OTHER_ID = #{otherId}) OR 
+							(USER_ID = #{otherId} and OTHER_ID = #{userId})
+							ORDER BY DATE 
+	</select>
+	
+	<select id="selectChatList" parameterType="String" resultType="hashmap">
+							select *
+							from SOCKET_CHAT
+							where USER_ID = #{userId} or OTHER_ID = #{otherId}
+							Group by CHAT_ROOM
+							ORDER BY DATE desc;
+	</select>
+</mapper>
