@@ -1,0 +1,38 @@
+import java.util.Scanner;
+
+public class b1613{
+	static int N;
+	static int[][] mat;
+	public static void main(String[] args) {
+		Scanner sc = new Scanner(System.in);
+		N = sc.nextInt();
+		mat = new int[N][N];
+		int k = sc.nextInt();
+		for(int i=0;i<k;i++) {
+			int idxY = sc.nextInt()-1;
+			int idxX = sc.nextInt()-1;
+			mat[idxY][idxX] = -1;
+			mat[idxX][idxY] = 1;
+		}
+		floyd();
+		int s = sc.nextInt();
+		for(int i=0;i<s;i++) {
+			System.out.println(mat[sc.nextInt()-1][sc.nextInt()-1]);
+		}
+	}
+	static void floyd() {
+		for(int k=0;k<N;k++) {
+			for(int i=0;i<N;i++) {
+				for(int j=0;j<N;j++) {
+					if(mat[i][j] == 0) {
+						if(mat[i][k] == 1 && mat[k][j] == 1){
+							mat[i][j] = 1;
+						}else if(mat[i][k] == -1 && mat[k][j] == -1){
+							mat[i][j] = -1;
+						}
+					}
+				}
+			}
+		}
+	}
+}
